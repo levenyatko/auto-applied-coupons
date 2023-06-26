@@ -19,6 +19,7 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
         private function __construct()
         {
             $this->load_dependencies();
+            $this->init_hooks();
             $this->run();
         }
 
@@ -48,6 +49,13 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-transient-controller.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-frontend.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-settings.php';
+        }
+
+        private function init_hooks()
+        {
+            add_filter('wcac_available_coupons_for_product', [WCAC_Product::class, 'get_coupons'], 10, 3);
+
+            add_filter('wcac_is_coupon_relevant', [WCAC_Coupon::class, 'is_relevant'], 10, 2);
         }
 
         /**

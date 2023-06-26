@@ -43,7 +43,7 @@
             return $expiry_date;
         }
 
-        public static function filter_code( $coupon, $product_id )
+        public static function is_relevant( $coupon, $product_id )
         {
             $applied_coupon_code = '';
 
@@ -56,7 +56,7 @@
                 if ( $coupon_expires <= time() ) {
 
                     // update coupons list if current coupon expires
-                    $updated_list = WCAC_Product::get_available_coupons( $product_id );
+                    $updated_list = apply_filters('wcac_available_coupons_for_product', [], $product_id, 1);
 
                     if ( isset( $updated_list['apply']['coupon_code'] ) ) {
                         return $updated_list['apply']['coupon_code'];

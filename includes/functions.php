@@ -26,7 +26,7 @@
 
                 remove_filter('woocommerce_product_is_on_sale', 'wcac_is_product_on_sale', 10, 2);
 
-                $coupons_data = WCAC_Product::get_coupons($product);
+                $coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product, 0);
 
                 if (isset($coupons_data['apply']['coupon_code'])) {
                     $on_sale = true;
@@ -55,7 +55,7 @@
         remove_filter( 'woocommerce_product_is_on_sale', 'wcac_is_product_on_sale', 10, 2 );
         remove_filter( 'woocommerce_product_get_price', 'wcac_woocommerce_get_coupon_price', 10, 2 );
 
-        $coupons_data = WCAC_Product::get_coupons( $product );
+        $coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product, 0);
 
         if ( isset( $coupons_data['apply']['product_price'] ) ) {
             $price = $coupons_data['apply']['product_price'];

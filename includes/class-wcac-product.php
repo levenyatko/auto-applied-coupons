@@ -2,7 +2,7 @@
 
     class WCAC_Product
     {
-        public static function get_coupons( $product )
+        public static function get_coupons( $coupons_list , $product, $ignore_cached = 0 )
         {
             $product_id = 0;
 
@@ -16,10 +16,14 @@
                 return false;
             }
 
-            $cached = WCAC_Transient::get_product_transient($product_id);
+            $ignore_cached = apply_filters('wcac_get_coupons_list_from_cache', $ignore_cached, $product_id);
 
-            if ( ! empty($cached) ) {
-                return $cached;
+            if ( ! $ignore_cached ) {
+                $cached = WCAC_Transient::get_product_transient($product_id);
+
+                if ( ! empty($cached) ) {
+                    return $cached;
+                }
             }
 
             $updated = self::get_available_coupons( $product_id );
@@ -27,7 +31,7 @@
             return $updated;
         }
 
-        public static function get_available_coupons( $product )
+        private static function get_available_coupons( $product )
         {
             $updated_list = [];
 

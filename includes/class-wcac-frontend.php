@@ -29,7 +29,7 @@
                 $product_id = get_the_ID();
             }
 
-            $product_coupons_data = WCAC_Product::get_coupons( $product_id );
+            $product_coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product_id, 0);
 
             if ( empty( $product_coupons_data ) ) {
                 return;
@@ -40,7 +40,7 @@
             $applied_coupon_code  = '';
 
             if ( isset( $product_coupons_data['apply']['coupon_code'] ) ) {
-                $applied_coupon_code = WCAC_Coupon::filter_code( $product_coupons_data['apply']['coupon_code'], $product_id );
+                $applied_coupon_code = apply_filters('wcac_is_coupon_relevant', $product_coupons_data['apply']['coupon_code'], $product_id);
             }
 
             $args = [
