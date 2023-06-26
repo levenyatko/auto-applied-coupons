@@ -21,14 +21,14 @@
     flex-wrap: wrap;
     flex-direction: column;
     margin: 6px;
-    color: var(--wc-secondary-text);
+    color: var(--wcac-main-text-color);
     font-weight: 600;
     text-align: center;
 }
 
 .wcac-coupons-list--items .wcac-coupon-card--label {
     padding: 12px 20px;
-    background-color: var(--wc-orange);
+    background-color: var(--wcac-main-bg-color);
     transition: transform .2s;
 }
 
@@ -42,8 +42,8 @@
 }
 
 .wcac-coupons-list--items .wcac-coupon-card--wrapper input:checked + label {
-
-    background-color: var(--wc-green);
+    color: var(--wcac-accent-text-color);
+    background-color: var(--wcac-accent-color);
 }
 
 .wcac-coupon-card--wrapper > *{

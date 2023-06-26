@@ -19,6 +19,8 @@
                     add_action('woocommerce_add_cart_item_data', [ self::class, 'apply' ], 10, 2);
                 }
 
+                add_action('wp_print_styles', [ self::class, 'print_styles' ], 10);
+
             }
 
         }
@@ -119,6 +121,24 @@
                 );
                 wp_enqueue_script( 'wcac-script');
             }
+        }
+
+        public static function print_styles()
+        {
+            $base_bg    = wcac_get_option( 'wcac_coupon_bg_color' );
+            $base_text  = wcac_get_option( 'wcac_coupon_text_color' );
+            $accent_bg  = wcac_get_option( 'wcac_active_coupon_bg_color' );
+            $accent_text = wcac_get_option( 'wcac_active_coupon_text_color' );
+            ?>
+            <style id="wcac-coupon-colors">
+                :root {
+                    --wcac-main-bg-color: <?php echo sanitize_hex_color($base_bg); ?>;
+                    --wcac-main-text-color: <?php echo sanitize_hex_color($base_text); ?>;
+                    --wcac-accent-color: <?php echo sanitize_hex_color($accent_bg); ?>;
+                    --wcac-accent-text-color: <?php echo sanitize_hex_color($accent_text); ?>;
+                }
+            </style>
+            <?php
         }
 
         public static function apply($cart_item_data, $product_id)
