@@ -1,70 +1,119 @@
 jQuery( function( $ ) {
 
-    var wcac_coupons_list = {
-        product_id: 0,
-        is_variable_product: false,
-        $coupons_list: $('.wcac-coupons-list--wrap'),
+    var wcacCouponsList = {
+        productId: 0,
+        variationId: 0,
+        isVariableProduct: false,
+        $couponsListWrapper: $('.wcac-coupons-list--wrap'),
         $loader: $('#wcac-coupons-list-loader'),
         init: function() {
             if ( 0 < $('form.cart.variations_form').length ) {
-                this.is_variable_product = true;
-            }
-
-            this.product_id = $('.single_add_to_cart_button').val();
-        },
-        update_product_cookie: function (value) {
-            Cookies.set('wcac_product_' + this.product_id + '_coupon', value);
-        },
-        update_product_coupon: function (coupon) {
-            if ( this.is_variable_product ) {
-
+                this.isVariableProduct = true;
+                this.productId = $('input[name=product_id]').val();
             } else {
-                this.update_product_cookie(coupon);
-                this.get_new_product_price(coupon);
+                this.productId = $('.single_add_to_cart_button').val();
+                this.showCouponsList(0);
             }
         },
-        updateProductPrice: function (price) {
-           this.$coupons_list.closest('.product').find('.price ins').html(price);
+        showList: function () {
+            this.$couponsListWrapper.show();
+        },
+        hideList: function () {
+            this.$couponsListWrapper.hide();
         },
         showLoader: function () {
             this.$loader.show();
-            $('.wcac-coupons-list--items').addClass('noscroll');
+            $('.wcac-coupons-list-items--wrap').addClass('noscroll').scrollTop(0);;
         },
         hideLoader: function () {
             this.$loader.hide();
-            $('.wcac-coupons-list--items').removeClass('noscroll');
+            $('.wcac-coupons-list-items--wrap').removeClass('noscroll');
         },
-        get_new_product_price: function (coupon_code) {
+        updateProductCookie: function (value) {
+            Cookies.set('wcac_product_' + this.productId + '_coupon', value);
+        },
+        updateProductPrice: function (price) {
+            this.$couponsListWrapper.closest('.product').find('.price ins').html(price);
+        },
+        updateProductCoupon: function (coupon) {
+            if ( this.isVariableProduct ) {
+
+            } else {
+                this.updateProductCookie(coupon);
+                this.getProductPrice(coupon);
+            }
+        },
+        showCouponsList: function (variation_id = 0) {
+
+            if ( this.isVariableProduct ) {
+                this.variationId = variation_id;
+            }
+
+            let requestData = {
+                'action'       : 'wcac_get_product_coupons',
+                'product_id'   : this.productId,
+                'is_variation' : this.isVariableProduct,
+                'variation_id' : this.variationId
+            };
+
+            $.ajax( {
+                url: wc_add_to_cart_params.ajax_url,
+                type: 'POST',
+                data: requestData,
+                beforeSend: function () {
+                    wcacCouponsList.showLoader();
+                },
+                success: function( responce ) {
+                    if ( responce.success ) {
+
+                        if ( responce.data.coupons_html ) {
+                            $('#wcac-coupons-list-items').html( responce.data.coupons_html );
+                            wcacCouponsList.showList();
+                        } else {
+                            $('#wcac-coupons-list-items').html( '');
+                            wcacCouponsList.hideList();
+                        }
+                    }
+                },
+                complete: function() {
+                    wcacCouponsList.hideLoader();
+                }
+            } );
+        },
+        getProductPrice: function (coupon_code) {
 
             $.ajax( {
                 url: wc_add_to_cart_params.ajax_url,
                 type: 'POST',
                 data: {
                     'action'     : 'wcac_get_sale_price',
-                    'product_id' : this.product_id,
+                    'product_id' : this.productId,
                     'coupon'     : coupon_code
                 },
                 beforeSend: function () {
-                    wcac_coupons_list.showLoader();
+                    wcacCouponsList.showLoader();
                 },
                 success: function( responce ) {
 
                     if ( responce.success ) {
-                        wcac_coupons_list.updateProductPrice( responce.data.new_price_html );
+                        wcacCouponsList.updateProductPrice( responce.data.new_price_html );
                     }
                 },
                 complete: function() {
-                    wcac_coupons_list.hideLoader();
+                    wcacCouponsList.hideLoader();
                 }
             } );
         }
     };
 
-    wcac_coupons_list.init();
-
+    wcacCouponsList.init();
 
     $(document).on('change', 'input[name=wcac-current-coupon-code]',function (e) {
-        wcac_coupons_list.update_product_coupon( $(this).val() );
+        wcacCouponsList.updateProductCoupon( $(this).val() );
+    });
+
+    $( '.variations_form' ).on( 'show_variation', function(event, variation) {
+        wcacCouponsList.showCouponsList( variation.variation_id );
     });
 
 });

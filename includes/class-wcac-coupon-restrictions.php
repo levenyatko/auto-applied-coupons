@@ -5,7 +5,7 @@
         public static $include_meta_key = 'wcac_include_attr_ids';
         public static $exclude_meta_key = 'wcac_exclude_attr_ids';
 
-        public function hooks()
+        public function init_hooks()
         {
             add_action( 'woocommerce_coupon_options_usage_restriction', [ $this, 'usage_restriction_fields' ], 10, 2 );
             add_action( 'save_post', [ $this, 'process_meta' ], 10, 2 );

@@ -8,10 +8,6 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
 
         private static $instance;
 
-        private static $frontend;
-        private static $restrictions;
-        private static $transient;
-
         public function __clone() {}
 
         public function __wakeup() {}
@@ -20,7 +16,6 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
         {
             $this->load_dependencies();
             $this->init_hooks();
-            $this->run();
         }
 
         public static function instance()
@@ -55,24 +50,17 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
         private function init_hooks()
         {
             add_filter('wcac_available_coupons_for_product', [WCAC_Product::class, 'get_coupons'], 10, 3);
-
             add_filter('wcac_is_coupon_relevant', [WCAC_Coupon::class, 'is_relevant'], 10, 2);
-        }
 
-        /**
-         * @return void
-         */
-        private function run()
-        {
-            self::$restrictions = new WCAC_Coupon_Restrictions();
-            self::$transient = new WCAC_Transient_Controller();
-            self::$frontend = new WCAC_Frontend();
-
-            self::$restrictions->hooks();
-            self::$transient->hooks();
-            self::$frontend->hooks();
-
+            WCAC_Frontend::init_hooks();
             WCAC_Ajax_Controller::init_hooks();
+
+            $restrictions = new WCAC_Coupon_Restrictions();
+            $restrictions->init_hooks();
+
+            $transient = new WCAC_Transient_Controller();
+            $transient->init_hooks();
+
         }
 
     }

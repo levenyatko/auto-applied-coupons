@@ -5,7 +5,7 @@
         /**
          * @return void
          */
-        public function hooks()
+        public function init_hooks()
         {
             $clear_cache_mode = wcac_get_option( 'wcac_clear_cache_mode' );
             $clear_cache_mode = apply_filters('wcac_clear_cache_mode', $clear_cache_mode);

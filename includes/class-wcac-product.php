@@ -85,8 +85,27 @@
                 foreach ($coupons_query->posts as $coupon_id) {
 
                     $coupon =  new WC_Coupon( $coupon_id );
-                    if ( $coupon->is_valid_for_product( $product ) ) {
-                        $available_product_coupons[] = $coupon;
+
+                    if ( is_a($product, 'WC_Product_Variable') ) {
+
+                        $variations = $product->get_visible_children();
+
+                        if ( $variations ) {
+                            foreach ($variations as $child_id) {
+                                $child_product = wc_get_product($child_id);
+
+                                if ( $coupon->is_valid_for_product( $child_product )
+                                     && ! isset( $available_product_coupons[ $coupon->get_id() ] )
+                                ) {
+                                    $available_product_coupons[ $coupon->get_id() ] = $coupon;
+                                }
+                            }
+                        }
+
+                    } else {
+                        if ( $coupon->is_valid_for_product( $product ) ) {
+                            $available_product_coupons[ $coupon->get_id() ] = $coupon;
+                        }
                     }
 
                 }

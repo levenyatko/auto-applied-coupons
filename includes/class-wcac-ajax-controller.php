@@ -4,6 +4,9 @@
     {
         public static function init_hooks()
         {
+            add_action( 'wp_ajax_wcac_get_product_coupons', [ self::class, 'get_product_coupons' ] );
+            add_action( 'wp_ajax_nopriv_wcac_get_product_coupons', [ self::class, 'get_product_coupons' ] );
+
             add_action( 'wp_ajax_wcac_get_sale_price', [ self::class, 'get_product_sale_price' ] );
             add_action( 'wp_ajax_nopriv_wcac_get_sale_price', [ self::class, 'get_product_sale_price' ] );
         }
@@ -30,6 +33,39 @@
 
             }
 
-            wp_send_json_error(['msg' => 'One or more required fields is empty']);
+            wp_send_json_error(['msg' => 'One or more required fields are empty']);
+        }
+
+        public static function get_product_coupons()
+        {
+            if ( ! empty($_POST['product_id']) ) {
+
+                if ( ! empty($_POST['is_variation']) && ! empty($_POST['variation_id']) ) {
+                    $product_id = (int)$_POST['variation_id'];
+                } else {
+                    $product_id = (int)$_POST['product_id'];
+                }
+
+                $product = wc_get_product( $product_id );
+
+                if ( ! $product || ! is_callable( array( $product, 'get_id' ) ) ) {
+                    wp_send_json_error(['msg' => 'Please, check the product']);
+                }
+
+                ob_start();
+
+                WCAC_Frontend::show_available_coupons( $product->get_id() );
+
+                $list_html = ob_get_contents();
+                ob_end_clean();
+
+                wp_send_json_success([
+                    'coupons_html' => $list_html
+                ]);
+
+            }
+
+            wp_send_json_error(['msg' => 'One or more required fields are empty']);
+
         }
     }
