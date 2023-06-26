@@ -26,12 +26,12 @@
            value="<?php echo esc_attr($coupon_object->get_code()); ?>"
     >
     <label for="<?php echo esc_attr($item_id); ?>" class="wcac-coupon-card--label">
-        <div class="wcac-coupon-amount">
-            <div class="wcac-coupon-amount--type">
-                <?php echo esc_html($coupon_data['coupon_type']); ?>
-            </div>
+        <div class="wcac-coupon-amount wcac-coupon-container">
             <div class="wcac-coupon-amount--value">
                 <?php echo apply_filters('wcac_coupon_amount_display', $coupon_data['coupon_amount'], $coupon_object); ?>
+            </div>
+            <div class="wcac-coupon-amount--type">
+                <?php echo esc_html($coupon_data['coupon_type']); ?>
             </div>
         </div>
         <div class="wcac-coupon-code">
@@ -43,7 +43,7 @@
             }
             $expiry_date_string = WCAC_Coupon::get_expiry_date_string( $coupon_expiry );
         ?>
-        <div>
+        <div class="wcac-coupon-footer wcac-coupon-container">
             <strong><?php esc_html_e('Expiry date: ', 'wcac'); ?></strong>
             <?php echo esc_html($expiry_date_string); ?>
         </div>
