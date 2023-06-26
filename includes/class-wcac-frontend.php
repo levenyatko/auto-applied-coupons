@@ -9,8 +9,8 @@
             $show_available_coupons = wcac_get_option( 'wcac_available_display' );
             $show_available_coupons = apply_filters('wcac_show_available_coupons', $show_available_coupons);
 
+            add_action( 'woocommerce_after_add_to_cart_button', [ $this, 'show_coupons'] , 11 );
             if ( ! empty($show_available_coupons) && 'yes' == $show_available_coupons ) {
-                add_action( 'woocommerce_after_add_to_cart_button', [ $this, 'show_coupons'] , 11 );
                 add_action( 'wp_enqueue_scripts', [$this, 'enqueue'] );
             }
 
@@ -50,7 +50,14 @@
                 'applied_code'      => $applied_coupon_code
             ];
 
-            wc_get_template( 'list.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
+            $show_available_coupons = apply_filters('wcac_show_available_coupons', wcac_get_option( 'wcac_available_display' ) );
+            $auto_apply_coupon = apply_filters('wcac_auto_apply_coupon', wcac_get_option( 'wcac_auto_apply_coupon' ));
+
+            if ( ! empty($show_available_coupons) && 'yes' == $show_available_coupons ) {
+                wc_get_template( 'list.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
+            } elseif ( ! empty($auto_apply_coupon) && 'yes' == $auto_apply_coupon ) {
+                wc_get_template( 'hidden.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
+            }
 
         }
 
