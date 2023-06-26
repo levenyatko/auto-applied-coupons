@@ -61,15 +61,20 @@
                 'meta_query'       => [
                     'relation' => 'AND',
                     [
+                        'key'     => WCAC_Coupon_Restrictions::$show_meta_key,
+                        'value'   => 'yes',
+                        'compare' => '=',
+                    ],
+                    [
                         'relation' => 'OR',
                         [
-                            'key' => 'date_expires',
-                            'value' => 'IS NULL',
+                            'key'     => 'date_expires',
+                            'value'   => 'IS NULL',
                             'compare' => '=',
                         ],
                         [
-                            'key' => 'date_expires',
-                            'value' => time(),
+                            'key'     => 'date_expires',
+                            'value'   => time(),
                             'compare' => '>=',
                             'type'    => 'NUMERIC',
                         ],

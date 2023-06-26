@@ -4,9 +4,11 @@
     {
         public static $include_meta_key = 'wcac_include_attr_ids';
         public static $exclude_meta_key = 'wcac_exclude_attr_ids';
+        public static $show_meta_key    = 'wcac_show_coupon';
 
         public function init_hooks()
         {
+            add_action( 'woocommerce_coupon_options', [ $this, 'general_tab_fields' ], 10, 2 );
             add_action( 'woocommerce_coupon_options_usage_restriction', [ $this, 'usage_restriction_fields' ], 10, 2 );
             add_action( 'save_post', [ $this, 'process_meta' ], 10, 2 );
 
@@ -43,6 +45,20 @@
             return [];
         }
 
+        public static function general_tab_fields( $coupon_id = 0, $coupon = null )
+        {
+            $show_coupon_value = get_post_meta( $coupon_id, self::$show_meta_key, true );
+
+            woocommerce_wp_checkbox(
+                array(
+                    'id'          => self::$show_meta_key,
+                    'label'       => __( 'Show on the product page', 'wcac' ),
+                    'description' => __( 'Check this box if the coupon should be displayed in allowed coupons block.', 'wcac' ),
+                    'value'       => wc_bool_to_string( $show_coupon_value ),
+                )
+            );
+        }
+
         /**
          * @param $coupon_id
          * @param $coupon
@@ -61,8 +77,8 @@
             }
 
             $attribute_taxonomies       = wc_get_attribute_taxonomies();
-            $attribute_options          = array();
-            $attribute_taxonomies_label = array();
+            $attribute_options          = [];
+            $attribute_taxonomies_label = [];
 
             if ( ! empty( $attribute_taxonomies ) && is_array( $attribute_taxonomies ) ) {
                 $attribute_taxonomies_name = array();
@@ -104,8 +120,8 @@
                 }
             }
 
-            $this->field_display(self::$include_meta_key, __( 'Include attributes', 'wcac' ), $attribute_options, $include_attribute_ids);
-            $this->field_display(self::$exclude_meta_key, __( 'Exclude attributes', 'wcac' ), $attribute_options, $exclude_attribute_ids);
+            $this->field_display_select(self::$include_meta_key, __( 'Include attributes', 'wcac' ), $attribute_options, $include_attribute_ids);
+            $this->field_display_select(self::$exclude_meta_key, __( 'Exclude attributes', 'wcac' ), $attribute_options, $exclude_attribute_ids);
 
         }
 
@@ -116,10 +132,10 @@
          * @param $values
          * @return void
          */
-        private function field_display($name, $label, $options, $values)
+        private function field_display_select($name, $label, $options, $values)
         {
             ?>
-                <div class="options_group wc-auto-coupons-field" style="background-color: #fdffef;">
+                <div class="options_group wc-auto-coupons-field">
                     <p class="form-field">
                         <label for="<?php echo esc_attr($name); ?>"><?php echo esc_html( $label ); ?></label>
                         <select id="<?php echo esc_attr($name); ?>"
@@ -171,6 +187,12 @@
             if ( 'shop_coupon' !== $post->post_type ) {
                 return;
             }
+
+            $show_value = '';
+            if ( isset( $_POST[ self::$show_meta_key ] ) ) {
+                $show_value =  $_POST[ self::$show_meta_key ];
+            }
+            update_post_meta( $post_id, self::$show_meta_key, $show_value );
 
             // update include attr ids
             $product_attribute_ids = [];
