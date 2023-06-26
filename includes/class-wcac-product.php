@@ -22,6 +22,14 @@
                 $cached = WCAC_Transient::get_product_transient($product_id);
 
                 if ( ! empty($cached) ) {
+
+                    $coupons_obj = [];
+                    foreach ($cached['available'] as $coupon_id) {
+                        $coupons_obj[] = new WC_Coupon($coupon_id);
+                    }
+
+                    $cached['apply'] = self::get_active_coupon($coupons_obj, $product);
+
                     return $cached;
                 }
             }
@@ -93,7 +101,7 @@
                     $updated_list['available'][] = $c->get_id();
                 }
 
-                $apply_coupon_data = self::get_max_sale_coupon( $available_product_coupons, $product );
+                $apply_coupon_data = self::get_active_coupon( $available_product_coupons, $product );
 
                 $updated_list['apply'] = $apply_coupon_data;
 
@@ -107,58 +115,90 @@
         /**
          * Get coupon with max sale for product
          */
-        private static function get_max_sale_coupon( $coupons, $product )
+        private static function get_active_coupon( $coupons, $product )
         {
-            if ( ! is_object( $product ) || ! is_callable( array( $product, 'get_id' ) ) ) {
+            if ( ! is_object( $product ) ) {
+                $product = wc_get_product($product);
+            }
+
+            if ( ! is_callable( array( $product, 'get_id' ) ) ) {
                 return [];
             }
+
+            $result = [];
 
             if ( count($coupons) > 0 ) {
 
                 remove_filter( 'woocommerce_product_get_price', 'wcac_woocommerce_get_coupon_price', 10, 2 );
 
-                $product_price = $product->get_price();
+                if ( ! empty( $_COOKIE['wcac_product_' . $product->get_id() . '_coupon'] ) ) {
+                    $code = $_COOKIE['wcac_product_' . $product->get_id() . '_coupon'];
 
-                $min_price = PHP_FLOAT_MAX;
-                $min_index = -1;
+                    foreach ($coupons as $coupon) {
 
-                $values = array (
-                    'data'		=> $product,
-                    'quantity'	=> 1
-                );
+                        if ( ! is_object($coupon) || $code != $coupon->get_code() ) {
+                            continue;
+                        }
 
-                foreach ($coupons as $i => $coupon) {
+                        $result = [
+                            'coupon_code'   => $coupon->get_code(),
+                            'product_price' => self::get_price_after_coupon($product, $coupon),
+                        ];
+                    }
+                }
 
-                    if ( ! is_object( $coupon ) || ! is_callable( array( $coupon, 'get_id' ) ) ) {
-                        continue;
+                // no coupon in cookies or it's unavailable
+                if ( empty( $result ) ) {
+
+                    $min_price = PHP_FLOAT_MAX;
+                    $min_index = -1;
+
+                    foreach ($coupons as $i => $coupon) {
+
+                        if ( ! is_object( $coupon ) || ! is_callable( array( $coupon, 'get_id' ) ) ) {
+                            continue;
+                        }
+
+                        $_price = self::get_price_after_coupon($product, $coupon);
+
+                        if ( $_price < $min_price ) {
+                            $min_price = $_price;
+                            $min_index = $i;
+                        }
+
                     }
 
-                    $discount_amount = $coupon->get_discount_amount( $product_price, $values, true );
-                    $discount_amount = min( $product_price, $discount_amount );
-                    $_price          = max( $product_price - $discount_amount, 0 );
+                    if ( $min_index >= 0 ) {
+                        $result = [
+                            'coupon_code'   => $coupons[ $min_index ]->get_code(),
+                            'product_price' => $min_price,
+                        ];
 
-                    if ( $_price < $min_price ) {
-                        $min_price = $_price;
-                        $min_index = $i;
                     }
 
                 }
 
                 add_filter( 'woocommerce_product_get_price', 'wcac_woocommerce_get_coupon_price', 10, 2 );
 
-                if ( $min_index >= 0 ) {
-
-                    return [
-                        'coupon_code' => $coupons[ $min_index ]->get_code(),
-                        'product_price' => $min_price,
-                    ];
-
-                }
-
             }
 
-            return [];
+            return $result;
 
+        }
+
+        private static function get_price_after_coupon($product, $coupon)
+        {
+            $values = array (
+                'data'		=> $product,
+                'quantity'	=> 1
+            );
+
+            $product_price = $product->get_price();
+            $discount_amount = $coupon->get_discount_amount( $product_price, $values, true );
+            $discount_amount = min( $product_price, $discount_amount );
+            $_price          = max( $product_price - $discount_amount, 0 );
+
+            return $_price;
         }
 
     }
