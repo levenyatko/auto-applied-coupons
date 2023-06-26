@@ -38,15 +38,14 @@
             <?php echo esc_html( $coupon_object->get_code() ); ?>
         </div>
         <?php
-            if ( isset($coupon_expiry) ) {
-                $expiry_date_string = WCAC_Coupon::get_expiry_date_string( $coupon_expiry );
-                ?>
-                <div>
-                    <strong><?php esc_html_e('Expiry date: ', 'wcac'); ?></strong>
-                    <?php echo esc_html($expiry_date_string); ?>
-                </div>
-                <?php
+            if ( ! isset($coupon_expiry) ) {
+                $coupon_expiry = '';
             }
+            $expiry_date_string = WCAC_Coupon::get_expiry_date_string( $coupon_expiry );
         ?>
+        <div>
+            <strong><?php esc_html_e('Expiry date: ', 'wcac'); ?></strong>
+            <?php echo esc_html($expiry_date_string); ?>
+        </div>
     </label>
 </div>
