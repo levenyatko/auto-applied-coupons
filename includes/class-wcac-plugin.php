@@ -18,6 +18,8 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
 
         private function __construct()
         {
+            $this->load_dependencies();
+            $this->run();
         }
 
         public static function instance()
@@ -26,12 +28,7 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
                 self::$instance === null ||
                 ! self::$instance instanceof self
             ) {
-
                 self::$instance = new self();
-
-                self::$instance->load_dependencies();
-                self::$instance->run();
-
             }
 
             return self::$instance;
@@ -50,7 +47,7 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-transient.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-transient-controller.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-frontend.php';
-
+            require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-settings.php';
         }
 
         /**
