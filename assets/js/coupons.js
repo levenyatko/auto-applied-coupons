@@ -12,7 +12,7 @@ jQuery( function( $ ) {
                 this.productId = $('input[name=product_id]').val();
             } else {
                 this.productId = $('.single_add_to_cart_button').val();
-                this.showCouponsList(0);
+                this.showCouponsList();
             }
         },
         showList: function () {
@@ -30,7 +30,11 @@ jQuery( function( $ ) {
             $('.wcac-coupons-list-items--wrap').removeClass('noscroll');
         },
         updateProductCookie: function (value) {
-            Cookies.set('wcac_product_' + this.productId + '_coupon', value);
+            if ( this.isVariableProduct ) {
+                Cookies.set('wcac_product_' + this.variationId + '_coupon', value);
+            } else {
+                Cookies.set('wcac_product_' + this.productId + '_coupon', value);
+            }
         },
         updateProductPrice: function (price) {
             let $priceObj = null;
@@ -52,11 +56,12 @@ jQuery( function( $ ) {
             this.updateProductCookie(coupon);
             this.getProductPrice(coupon);
         },
-        showCouponsList: function (variation_id = 0) {
-
+        updateProductVariation: function (variation_id = 0) {
             if ( this.isVariableProduct ) {
                 this.variationId = variation_id;
             }
+        },
+        showCouponsList: function () {
 
             let requestData = {
                 'action'       : 'wcac_get_product_coupons',
@@ -78,6 +83,12 @@ jQuery( function( $ ) {
                         if ( responce.data.coupons_html ) {
                             $('#wcac-coupons-list-items').html( responce.data.coupons_html );
                             wcacCouponsList.showList();
+
+                            let $appliedCoupon = $('input[name=wcac-current-coupon-code]:checked');
+                            if ( $appliedCoupon.length ) {
+                                wcacCouponsList.updateProductCoupon( $appliedCoupon.val() );
+                            }
+
                         } else {
                             $('#wcac-coupons-list-items').html( '');
                             wcacCouponsList.hideList();
@@ -88,7 +99,7 @@ jQuery( function( $ ) {
                     wcacCouponsList.hideLoader();
                 }
             } );
-        },
+            },
         getProductPrice: function (coupon_code) {
 
             $.ajax( {
@@ -122,7 +133,8 @@ jQuery( function( $ ) {
     });
 
     $( '.variations_form' ).on( 'show_variation', function(event, variation) {
-        wcacCouponsList.showCouponsList( variation.variation_id );
+        wcacCouponsList.updateProductVariation(variation.variation_id);
+        wcacCouponsList.showCouponsList();
     });
 
 });
