@@ -17,19 +17,22 @@
 
     function wcac_is_product_on_sale( $on_sale, $product )
     {
-        if ( !is_admin() ) {
-            if ( !$on_sale ) {
+        if ( !is_admin() && !$on_sale ) {
 
-                remove_filter( 'woocommerce_product_is_on_sale', 'wcac_is_product_on_sale', 10, 2 );
+            $apply_coupon_to_price = wcac_get_option( 'wcac_make_price_sale' );
+            $apply_coupon_to_price = apply_filters('wcac_apply_coupon_to_price', $apply_coupon_to_price);
 
-                $coupons_data = WCAC_Product::get_coupons( $product );
+            if ( ! empty($apply_coupon_to_price) && 'yes' == $apply_coupon_to_price ) {
 
-                if ( isset( $coupons_data['apply']['coupon_code'] ) ) {
+                remove_filter('woocommerce_product_is_on_sale', 'wcac_is_product_on_sale', 10, 2);
+
+                $coupons_data = WCAC_Product::get_coupons($product);
+
+                if (isset($coupons_data['apply']['coupon_code'])) {
                     $on_sale = true;
                 }
 
-                add_filter( 'woocommerce_product_is_on_sale', 'wcac_is_product_on_sale', 10, 2 );
-
+                add_filter('woocommerce_product_is_on_sale', 'wcac_is_product_on_sale', 10, 2);
             }
         }
 
@@ -39,6 +42,13 @@
     function wcac_woocommerce_get_coupon_price( $price, $product )
     {
         if ( is_cart() || is_checkout() || is_admin() ) {
+            return $price;
+        }
+
+        $apply_coupon_to_price = wcac_get_option( 'wcac_make_price_sale' );
+        $apply_coupon_to_price = apply_filters('wcac_apply_coupon_to_price', $apply_coupon_to_price);
+
+        if ( empty($apply_coupon_to_price) || 'no' == $apply_coupon_to_price ) {
             return $price;
         }
 
@@ -109,3 +119,9 @@
 
         return $product_attributes_ids;
     }
+
+    function wcac_get_option($key)
+    {
+        return sanitize_text_field( trim( get_option( $key ) ) );
+    }
+

@@ -5,15 +5,22 @@
 
         public function hooks()
         {
-            // show available coupons in single product page
-            add_action( 'woocommerce_after_add_to_cart_button', [ $this, 'show_coupons'] , 11 );
-            // for manual display
-            add_action( 'wcac_product_available_coupons', [ $this, 'show_coupons'], 11 );
+            // show available coupons if needed
+            $show_available_coupons = wcac_get_option( 'wcac_available_display' );
+            $show_available_coupons = apply_filters('wcac_show_available_coupons', $show_available_coupons);
 
-            add_action( 'wp_enqueue_scripts', [$this, 'enqueue'] );
+            if ( ! empty($show_available_coupons) && 'yes' == $show_available_coupons ) {
+                add_action( 'woocommerce_after_add_to_cart_button', [ $this, 'show_coupons'] , 11 );
+                add_action( 'wp_enqueue_scripts', [$this, 'enqueue'] );
+            }
 
-            // apply coupon with product
-            add_action( 'woocommerce_add_cart_item_data', [ $this, 'apply' ], 10, 2 );
+            $auto_apply_coupon = wcac_get_option( 'wcac_auto_apply_coupon' );
+            $auto_apply_coupon = apply_filters('wcac_auto_apply_coupon', $auto_apply_coupon);
+
+            if ( ! empty($auto_apply_coupon) && 'yes' == $auto_apply_coupon ) {
+                // apply coupon with product
+                add_action('woocommerce_add_cart_item_data', [ $this, 'apply' ], 10, 2);
+            }
         }
 
         public function show_coupons($product_id = 0)
