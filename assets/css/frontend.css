@@ -28,6 +28,7 @@
 
 .wcac-coupons-list--items .wcac-coupon-card--label {
     padding: 12px 20px;
+    font-size: 12pt;
     background-color: var(--wcac-main-bg-color);
     transition: transform .2s;
 }

@@ -54,7 +54,10 @@ jQuery( function( $ ) {
         },
         updateProductCoupon: function (coupon) {
             this.updateProductCookie(coupon);
-            this.getProductPrice(coupon);
+
+            if ( wcac_vars.settings.shouldChangePrice ) {
+                this.getProductPrice(coupon);
+            }
         },
         updateProductVariation: function (variation_id = 0) {
             if ( this.isVariableProduct ) {

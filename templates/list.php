@@ -1,6 +1,7 @@
 <?php
     $block_title = wcac_get_option( 'wcac_front_block_title' );
 ?>
+<br>
 <div class="wcac-coupons-list--wrap" style="display: none">
     <?php if ( ! empty($block_title) ) { ?>
         <p class="wcac-coupons-list--heading">

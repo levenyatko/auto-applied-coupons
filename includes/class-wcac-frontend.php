@@ -115,8 +115,9 @@
                 wp_register_script( 'wcac-script', WCAC_PLUGIN_URL . 'assets/js/coupons.js', false, null, true );
                 wp_localize_script( 'wcac-script', 'wcac_vars',
                     [
-                        'apibase' => get_rest_url(null, 'wcac-action'),
-                        'nonce'   => wp_create_nonce( 'wp_rest' )
+                        'settings'=> [
+                            'shouldChangePrice' => wcac_should_make_sale()
+                        ],
                     ]
                 );
                 wp_enqueue_script( 'wcac-script');
