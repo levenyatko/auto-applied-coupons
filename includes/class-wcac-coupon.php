@@ -56,10 +56,9 @@
                 if ( $coupon_expires <= time() ) {
 
                     // update coupons list if current coupon expires
-                    $updated_list = WCAC_Product::update_available_coupons( $product_id );
+                    $updated_list = WCAC_Product::get_available_coupons( $product_id );
 
                     if ( isset( $updated_list['apply']['coupon_code'] ) ) {
-
                         return $updated_list['apply']['coupon_code'];
                     }
 

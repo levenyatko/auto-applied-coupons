@@ -10,6 +10,7 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
 
         private static $frontend;
         private static $restrictions;
+        private static $transient;
 
         public function __clone() {}
 
@@ -46,6 +47,8 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-coupon-restrictions.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-product.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-coupon.php';
+            require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-transient.php';
+            require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-transient-controller.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-frontend.php';
 
         }
@@ -56,9 +59,11 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
         private function run()
         {
             self::$restrictions = new WCAC_Coupon_Restrictions();
+            self::$transient = new WCAC_Transient_Controller();
             self::$frontend = new WCAC_Frontend();
 
             self::$restrictions->hooks();
+            self::$transient->hooks();
             self::$frontend->hooks();
         }
 

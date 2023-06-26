@@ -65,11 +65,8 @@
     {
         $product_attributes_ids = array();
 
-        if ( ! is_a( $product, 'WC_Product' ) ) {
-            // Check if product id has been passed.
-            if ( is_numeric( $product ) ) {
-                $product = wc_get_product( $product );
-            }
+        if ( is_numeric( $product ) ) {
+            $product = wc_get_product( $product );
         }
 
         if ( ! is_a( $product, 'WC_Product' ) ) {
@@ -77,6 +74,7 @@
         }
 
         $product_attributes = $product->get_attributes();
+
         if ( ! empty( $product_attributes ) ) {
 
             if ( true === $product->is_type( 'variation' ) ) {

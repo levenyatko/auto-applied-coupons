@@ -2,8 +2,6 @@
 
     class WCAC_Product
     {
-        private static $trancient_key_format = 'wcac_product_%s_coupons_cache';
-
         public static function get_coupons( $product )
         {
             $product_id = 0;
@@ -18,19 +16,18 @@
                 return false;
             }
 
-            $transient_key = sprintf( self::$trancient_key_format, $product_id ) ;
-            $cached = get_transient( $transient_key );
+            $cached = WCAC_Transient::get_product_transient($product_id);
 
-            if ( $cached !== false ) {
+            if ( ! empty($cached) ) {
                 return $cached;
             }
 
-            $updated = self::update_available_coupons( $product_id );
+            $updated = self::get_available_coupons( $product_id );
 
             return $updated;
         }
 
-        public static function update_available_coupons( $product )
+        public static function get_available_coupons( $product )
         {
             $updated_list = [];
 
@@ -98,9 +95,7 @@
 
             }
 
-            $transient_key = sprintf( self::$trancient_key_format, $product->get_id() ) ;
-            // store for 3 hours
-            set_transient( $transient_key, $updated_list, 3 * HOUR_IN_SECONDS );
+            WCAC_Transient::update_product_transient($product->get_id(), $updated_list);
 
             return $updated_list;
         }
