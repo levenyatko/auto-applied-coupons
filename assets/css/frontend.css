@@ -4,6 +4,7 @@
     flex-direction: row;
     max-height: 230px;
     overflow-y: scroll;
+    position: relative;
 }
 
 .wcac-coupons-list--items .wcac-coupon-card--wrapper {
@@ -54,3 +55,45 @@
     padding: 5px;
 }
 
+#wcac-coupons-list-loader {
+    display: none;
+}
+
+.wcac-loader--wrap {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ebe9ebb0;
+}
+
+.wcac-loader {
+    display: block;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    background-color: #fff;
+    box-shadow: 32px 0 #fff, -32px 0 #fff;
+    animation: flash 0.5s ease-out infinite alternate;
+}
+
+@keyframes flash {
+    0% {
+        background-color: #FFF6;
+        box-shadow: 32px 0 #FFF6, -32px 0 #fff;
+    }
+    50% {
+        background-color: #fff;
+        box-shadow: 32px 0 #FFF6, -32px 0 #FFF6;
+    }
+    100% {
+        background-color: #FFF6;
+        box-shadow: 32px 0 #fff, -32px 0 #FFF6;
+    }
+}
+
+.noscroll {
+    overflow: hidden;
+}

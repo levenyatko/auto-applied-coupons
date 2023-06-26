@@ -186,14 +186,14 @@
 
         }
 
-        private static function get_price_after_coupon($product, $coupon)
+        public static function get_price_after_coupon($product, $coupon)
         {
             $values = array (
                 'data'		=> $product,
                 'quantity'	=> 1
             );
 
-            $product_price = $product->get_price();
+            $product_price   = $product->get_price();
             $discount_amount = $coupon->get_discount_amount( $product_price, $values, true );
             $discount_amount = min( $product_price, $discount_amount );
             $_price          = max( $product_price - $discount_amount, 0 );

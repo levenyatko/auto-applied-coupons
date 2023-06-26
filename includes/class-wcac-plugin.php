@@ -49,6 +49,7 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-transient-controller.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-frontend.php';
             require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-settings.php';
+            require_once WCAC_PLUGIN_DIR . 'includes/class-wcac-ajax-controller.php';
         }
 
         private function init_hooks()
@@ -70,6 +71,8 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
             self::$restrictions->hooks();
             self::$transient->hooks();
             self::$frontend->hooks();
+
+            WCAC_Ajax_Controller::init_hooks();
         }
 
     }

@@ -45,5 +45,8 @@
                 wc_get_template( 'card.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
             }
         ?>
+        <div class="wcac-loader--wrap" id="wcac-coupons-list-loader">
+            <span class="wcac-loader"></span>
+        </div>
     </div>
 </div>
