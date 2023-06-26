@@ -17,7 +17,7 @@
                 $product = wc_get_product( (int)$_POST['product_id'] );
 
                 if ( ! $product || ! is_callable( array( $product, 'get_id' ) ) ) {
-                    wp_send_json_error(['msg' => 'Please, check the product']);
+                    wp_send_json_error(['msg' => __('Please, check the product', 'wcac')]);
                 }
 
                 $coupon_id = wc_get_coupon_id_by_code($_POST['coupon']);
@@ -25,15 +25,21 @@
                     $coupon = new WC_Coupon($coupon_id);
                     $price = WCAC_Product::get_price_after_coupon($product, $coupon);
 
+                    if ( round($price, 2) !== round($product->get_price(), 2) ) {
+                        $price_html = wc_format_sale_price( wc_price( $product->get_price() ), wc_price( $price ) );
+                    } else {
+                        $price_html = wc_price( $product->get_price() );
+                    }
+
                     wp_send_json_success([
                         'new_price'      => $price,
-                        'new_price_html' => wc_price($price)
+                        'new_price_html' => $price_html
                     ]);
                 }
 
             }
 
-            wp_send_json_error(['msg' => 'One or more required fields are empty']);
+            wp_send_json_error(['msg' => __('One or more required fields are empty', 'wcac')]);
         }
 
         public static function get_product_coupons()
@@ -49,7 +55,7 @@
                 $product = wc_get_product( $product_id );
 
                 if ( ! $product || ! is_callable( array( $product, 'get_id' ) ) ) {
-                    wp_send_json_error(['msg' => 'Please, check the product']);
+                    wp_send_json_error(['msg' => __('Please, check the product', 'wcac')]);
                 }
 
                 ob_start();
@@ -65,7 +71,7 @@
 
             }
 
-            wp_send_json_error(['msg' => 'One or more required fields are empty']);
+            wp_send_json_error(['msg' => __('One or more required fields are empty', 'wcac')]);
 
         }
     }

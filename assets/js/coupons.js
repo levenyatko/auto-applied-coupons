@@ -33,15 +33,24 @@ jQuery( function( $ ) {
             Cookies.set('wcac_product_' + this.productId + '_coupon', value);
         },
         updateProductPrice: function (price) {
-            this.$couponsListWrapper.closest('.product').find('.price ins').html(price);
+            let $priceObj = null;
+            let $productWrapper = this.$couponsListWrapper.closest('.product');
+            if ( this.isVariableProduct ) {
+                $priceObj = $productWrapper.find('.woocommerce-variation-price .price');
+                if ( 0 == $priceObj.length ) {
+                    $priceObj = $productWrapper.find('.price');
+                }
+            } else {
+                $priceObj = $productWrapper.find('.price');
+            }
+
+            if ( 0 < $priceObj.length ) {
+                $priceObj.html( price );
+            }
         },
         updateProductCoupon: function (coupon) {
-            if ( this.isVariableProduct ) {
-
-            } else {
-                this.updateProductCookie(coupon);
-                this.getProductPrice(coupon);
-            }
+            this.updateProductCookie(coupon);
+            this.getProductPrice(coupon);
         },
         showCouponsList: function (variation_id = 0) {
 

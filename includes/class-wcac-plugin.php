@@ -52,6 +52,10 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
             add_filter('wcac_available_coupons_for_product', [WCAC_Product::class, 'get_coupons'], 10, 3);
             add_filter('wcac_is_coupon_relevant', [WCAC_Coupon::class, 'is_relevant'], 10, 2);
 
+            add_filter( 'posts_where' , 'wcac_where_query_allow_is_null' );
+
+            wcac_add_price_hooks();
+
             WCAC_Frontend::init_hooks();
             WCAC_Ajax_Controller::init_hooks();
 

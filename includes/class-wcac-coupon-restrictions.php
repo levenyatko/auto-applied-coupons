@@ -122,12 +122,19 @@
                 <div class="options_group wc-auto-coupons-field" style="background-color: #fdffef;">
                     <p class="form-field">
                         <label for="<?php echo esc_attr($name); ?>"><?php echo esc_html( $label ); ?></label>
-                        <select id="<?php echo esc_attr($name); ?>" name="<?php echo esc_attr($name); ?>[]" style="width: 50%;"  class="wc-enhanced-select" multiple="multiple" data-placeholder="<?php esc_attr_e( 'No product attributes', 'wcac' ); ?>">
+                        <select id="<?php echo esc_attr($name); ?>"
+                          name="<?php echo esc_attr($name); ?>[]"
+                          style="width: 50%;"
+                          class="wc-enhanced-select"
+                          multiple="multiple"
+                          data-placeholder="<?php esc_attr_e( 'No product attributes', 'wcac' ); ?>"
+                        >
                             <?php
                                 if ( ! empty( $options ) ) {
                                     foreach ( $options as $attribute_id => $attribute_data ) {
                                         $is_selected = selected( in_array( (string) $attribute_id, $values, true ), true, false );
-                                        echo '<option title="' . esc_attr( $attribute_data['title'] ) . '" value="' . esc_attr( $attribute_id ) . '"' . esc_attr( $is_selected ) . '>' . esc_html( $attribute_data['label'] ) . '</option>';
+
+                                        echo sprintf('<option title="%s" value="%s" %s>%s</option>', esc_attr($attribute_data['title']), esc_attr($attribute_id), esc_attr($is_selected), esc_html($attribute_data['label']));
                                     }
                                 }
                             ?>

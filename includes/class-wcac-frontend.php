@@ -5,22 +5,22 @@
 
         public static function init_hooks()
         {
-            // show available coupons if needed
-            $show_available_coupons = wcac_get_option( 'wcac_available_display' );
-            $show_available_coupons = apply_filters('wcac_show_available_coupons', $show_available_coupons);
 
-            add_action( 'woocommerce_after_add_to_cart_button', [ self::class, 'show_coupons_list'] , 11 );
-            if ( ! empty($show_available_coupons) && 'yes' == $show_available_coupons ) {
+            if ( wcac_is_coupons_displayed() ) {
+
+                add_action( 'woocommerce_after_add_to_cart_button', [ self::class, 'show_coupons_list'] , 11 );
                 add_action( 'wp_enqueue_scripts', [self::class, 'enqueue'] );
+
+                $auto_apply_coupon = wcac_get_option( 'wcac_auto_apply_coupon' );
+                $auto_apply_coupon = apply_filters('wcac_auto_apply_coupon', $auto_apply_coupon);
+
+                if ( ! empty($auto_apply_coupon) && 'yes' == $auto_apply_coupon ) {
+                    // apply coupon with product
+                    add_action('woocommerce_add_cart_item_data', [ self::class, 'apply' ], 10, 2);
+                }
+
             }
 
-            $auto_apply_coupon = wcac_get_option( 'wcac_auto_apply_coupon' );
-            $auto_apply_coupon = apply_filters('wcac_auto_apply_coupon', $auto_apply_coupon);
-
-            if ( ! empty($auto_apply_coupon) && 'yes' == $auto_apply_coupon ) {
-                // apply coupon with product
-                add_action('woocommerce_add_cart_item_data', [ self::class, 'apply' ], 10, 2);
-            }
         }
 
         public static function show_coupons_list($product_id = 0)
@@ -33,14 +33,7 @@
                 'product_id'        => $product_id,
             ];
 
-            $show_available_coupons = apply_filters('wcac_show_available_coupons', wcac_get_option( 'wcac_available_display' ) );
-            $auto_apply_coupon = apply_filters('wcac_auto_apply_coupon', wcac_get_option( 'wcac_auto_apply_coupon' ));
-
-            if ( ! empty($show_available_coupons) && 'yes' == $show_available_coupons ) {
-                wc_get_template( 'list.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
-            } elseif ( ! empty($auto_apply_coupon) && 'yes' == $auto_apply_coupon ) {
-                wc_get_template( 'hidden.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
-            }
+            wc_get_template( 'list.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
 
         }
 

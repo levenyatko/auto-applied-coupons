@@ -2,6 +2,7 @@
 
     class WCAC_Product
     {
+
         public static function get_coupons( $coupons_list , $product, $ignore_cached = 0 )
         {
             $product_id = 0;
@@ -148,7 +149,7 @@
 
             if ( count($coupons) > 0 ) {
 
-                remove_filter( 'woocommerce_product_get_price', 'wcac_woocommerce_get_coupon_price', 10, 2 );
+                remove_filter( 'woocommerce_product_get_price',  [WCAC_Product::class, 'get_sale_price'], 10, 2 );
 
                 if ( ! empty( $_COOKIE['wcac_product_' . $product->get_id() . '_coupon'] ) ) {
                     $code = $_COOKIE['wcac_product_' . $product->get_id() . '_coupon'];
@@ -197,7 +198,7 @@
 
                 }
 
-                add_filter( 'woocommerce_product_get_price', 'wcac_woocommerce_get_coupon_price', 10, 2 );
+                add_filter( 'woocommerce_product_get_price',  [WCAC_Product::class, 'get_sale_price'], 10, 2 );
 
             }
 
@@ -218,6 +219,46 @@
             $_price          = max( $product_price - $discount_amount, 0 );
 
             return $_price;
+        }
+
+        public static function is_on_sale( $on_sale, $product )
+        {
+            if ( !is_admin() && !$on_sale ) {
+
+                if ( wcac_should_make_sale() ) {
+
+                    remove_filter('woocommerce_product_is_on_sale', [WCAC_Product::class, 'is_on_sale'], 10, 2);
+
+                    $coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product, 0);
+
+                    if (isset($coupons_data['apply']['coupon_code'])) {
+                        $on_sale = true;
+                    }
+
+                    add_filter('woocommerce_product_is_on_sale', [WCAC_Product::class, 'is_on_sale'], 10, 2);
+                }
+            }
+
+            return $on_sale;
+        }
+
+        public static function get_sale_price( $price, $product )
+        {
+            if ( is_cart() || is_checkout() || is_admin() || ! wcac_should_make_sale() ) {
+                return $price;
+            }
+
+            wcac_remove_price_hooks();
+
+            $coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product, 0);
+
+            if ( isset( $coupons_data['apply']['product_price'] ) ) {
+                $price = $coupons_data['apply']['product_price'];
+            }
+
+            wcac_add_price_hooks();
+
+            return $price;
         }
 
     }
