@@ -22,18 +22,8 @@
 
                 $coupon_id = wc_get_coupon_id_by_code($_POST['coupon']);
                 if ( $coupon_id ) {
-                    $coupon = new WC_Coupon($coupon_id);
-                    $price = WCAC_Product::get_price_after_coupon($product, $coupon);
-
-                    if ( round($price, 2) !== round($product->get_price(), 2) ) {
-                        $price_html = wc_format_sale_price( wc_price( $product->get_price() ), wc_price( $price ) );
-                    } else {
-                        $price_html = wc_price( $product->get_price() );
-                    }
-
                     wp_send_json_success([
-                        'new_price'      => $price,
-                        'new_price_html' => $price_html
+                        'new_price_html' => $product->get_price_html()
                     ]);
                 }
 

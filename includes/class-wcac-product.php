@@ -3,7 +3,7 @@
     class WCAC_Product
     {
 
-        public static function get_coupons( $coupons_list , $product, $ignore_cached = 0 )
+        public static function get_coupons( $coupons_list, $product, $ignore_cached = 0 )
         {
             $product_id = 0;
 
@@ -23,24 +23,28 @@
                 $cached = WCAC_Transient::get_product_transient($product_id);
 
                 if ( ! empty($cached) ) {
-
-                    $coupons_obj = [];
-                    foreach ($cached['available'] as $coupon_id) {
-                        $coupons_obj[] = new WC_Coupon($coupon_id);
-                    }
-
-                    $cached['apply'] = self::get_active_coupon($coupons_obj, $product);
-
                     return $cached;
                 }
             }
 
-            $updated = self::get_available_coupons( $product_id );
+            $coupons_list = self::make_coupons_list( $product_id );
 
-            return $updated;
+            WCAC_Transient::update_product_transient($product_id, $coupons_list);
+
+            return $coupons_list;
         }
 
-        private static function get_available_coupons( $product )
+        public static function update_coupons_list($product_id)
+        {
+            if ( ! $product_id ) {
+                return;
+            }
+
+            $coupons_list = self::make_coupons_list( $product_id );
+            WCAC_Transient::update_product_transient($product_id, $coupons_list);
+        }
+
+        private static function make_coupons_list( $product )
         {
             $updated_list = [];
 
@@ -101,7 +105,7 @@
                                 $child_product = wc_get_product($child_id);
 
                                 if ( $coupon->is_valid_for_product( $child_product )
-                                     && ! isset( $available_product_coupons[ $coupon->get_id() ] )
+                                    && ! isset( $available_product_coupons[ $coupon->get_id() ] )
                                 ) {
                                     $available_product_coupons[ $coupon->get_id() ] = $coupon;
                                 }
@@ -120,95 +124,13 @@
 
             if ( $available_product_coupons ) {
 
-                $updated_list['available'] = [];
-
                 foreach ( $available_product_coupons as $c ) {
-                    $updated_list['available'][] = $c->get_id();
+                    $updated_list[] = $c->get_id();
                 }
 
-                $apply_coupon_data = self::get_active_coupon( $available_product_coupons, $product );
-
-                $updated_list['apply'] = $apply_coupon_data;
-
             }
-
-            WCAC_Transient::update_product_transient($product->get_id(), $updated_list);
 
             return $updated_list;
-        }
-
-        /**
-         * Get coupon with max sale for product
-         */
-        private static function get_active_coupon( $coupons, $product )
-        {
-            if ( ! is_object( $product ) ) {
-                $product = wc_get_product($product);
-            }
-
-            if ( ! is_callable( array( $product, 'get_id' ) ) ) {
-                return [];
-            }
-
-            $result = [];
-
-            if ( count($coupons) > 0 ) {
-
-                remove_filter( 'woocommerce_product_get_price',  [WCAC_Product::class, 'get_sale_price'], 10, 2 );
-
-                if ( ! empty( $_COOKIE['wcac_product_' . $product->get_id() . '_coupon'] ) ) {
-                    $code = $_COOKIE['wcac_product_' . $product->get_id() . '_coupon'];
-
-                    foreach ($coupons as $coupon) {
-
-                        if ( ! is_object($coupon) || $code != $coupon->get_code() ) {
-                            continue;
-                        }
-
-                        $result = [
-                            'coupon_code'   => $coupon->get_code(),
-                            'product_price' => self::get_price_after_coupon($product, $coupon),
-                        ];
-                    }
-                }
-
-                // no coupon in cookies or it's unavailable
-                if ( empty( $result ) ) {
-
-                    $min_price = PHP_FLOAT_MAX;
-                    $min_index = -1;
-
-                    foreach ($coupons as $i => $coupon) {
-
-                        if ( ! is_object( $coupon ) || ! is_callable( array( $coupon, 'get_id' ) ) ) {
-                            continue;
-                        }
-
-                        $_price = self::get_price_after_coupon($product, $coupon);
-
-                        if ( $_price < $min_price ) {
-                            $min_price = $_price;
-                            $min_index = $i;
-                        }
-
-                    }
-
-                    if ( $min_index >= 0 ) {
-                        $result = [
-                            'coupon_code'   => $coupons[ $min_index ]->get_code(),
-                            'product_price' => $min_price,
-                        ];
-
-                    }
-
-                }
-
-                add_filter( 'woocommerce_product_get_price',  [WCAC_Product::class, 'get_sale_price'], 10, 2 );
-
-            }
-
-            return $result;
-
         }
 
         public static function get_price_after_coupon($product, $coupon)
@@ -223,28 +145,7 @@
             $discount_amount = min( $product_price, $discount_amount );
             $_price          = max( $product_price - $discount_amount, 0 );
 
-            return $_price;
-        }
-
-        public static function is_on_sale( $on_sale, $product )
-        {
-            if ( !is_admin() && !$on_sale ) {
-
-                if ( wcac_should_make_sale() ) {
-
-                    remove_filter('woocommerce_product_is_on_sale', [WCAC_Product::class, 'is_on_sale'], 10, 2);
-
-                    $coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product, 0);
-
-                    if (isset($coupons_data['apply']['coupon_code'])) {
-                        $on_sale = true;
-                    }
-
-                    add_filter('woocommerce_product_is_on_sale', [WCAC_Product::class, 'is_on_sale'], 10, 2);
-                }
-            }
-
-            return $on_sale;
+            return wc_format_decimal( $_price, wc_get_price_decimals() );
         }
 
         public static function get_sale_price( $price, $product )
@@ -253,15 +154,49 @@
                 return $price;
             }
 
-            wcac_remove_price_hooks();
-
-            $coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product, 0);
-
-            if ( isset( $coupons_data['apply']['product_price'] ) ) {
-                $price = $coupons_data['apply']['product_price'];
+            $coupon_data =  wcac_get_product_active_coupon($product);
+            if ( isset( $coupon_data['product_price'] ) ) {
+                $price = $coupon_data['product_price'];
             }
 
-            wcac_add_price_hooks();
+            return $price;
+        }
+
+        public static function get_variation_prices($prices, $product, $for_display)
+        {
+            foreach ($prices['price'] as $variation_id => $price) {
+                $product_coupon = wcac_get_product_active_coupon($variation_id);
+                if ( ! empty($product_coupon['coupon_code'])) {
+                    $prices['price'][ $variation_id ] = $product_coupon['product_price'];
+                    $prices['sale_price'][ $variation_id ] = $product_coupon['product_price'];
+                }
+            }
+
+            return $prices;
+        }
+
+        public static function get_price_html( $price, $product )
+        {
+            if ( is_cart() || is_checkout() || is_admin() || ! wcac_should_make_sale() ) {
+                return $price;
+            }
+
+            if ( in_array($product::class, ['WC_Product_Variation', 'WC_Product_Simple']) ) {
+
+                $product_price = $product->get_price();
+
+                wcac_remove_price_hooks();
+
+                $coupon_data =  wcac_get_product_active_coupon($product);
+
+                if ( isset( $coupon_data['product_price'] ) ) {
+                    $after_coupon = $coupon_data['product_price'];
+                    $price = wc_format_sale_price($product_price, $after_coupon);
+                }
+
+                wcac_add_price_hooks();
+
+            }
 
             return $price;
         }

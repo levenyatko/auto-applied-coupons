@@ -42,18 +42,17 @@
         public static function show_available_coupons( $product_id )
         {
 
-            $product_coupons_data =  apply_filters('wcac_available_coupons_for_product', [], $product_id, 0);
+            $coupons =  apply_filters('wcac_available_coupons_for_product', [], $product_id, 0);
 
-            if ( empty( $product_coupons_data ) ) {
+            if ( empty( $coupons ) ) {
                 return;
             }
 
-            $coupons = $product_coupons_data['available'];
-
+            $applied_data = wcac_get_product_active_coupon($product_id);
             $applied_code  = '';
 
-            if ( isset( $product_coupons_data['apply']['coupon_code'] ) ) {
-                $applied_code = apply_filters('wcac_is_coupon_relevant', $product_coupons_data['apply']['coupon_code'], $product_id);
+            if ( isset( $applied_data['coupon_code'] ) ) {
+                $applied_code = $applied_data['coupon_code'];
             }
 
             $displayed_count = apply_filters('wcac_coupons_count_to_show', 5);

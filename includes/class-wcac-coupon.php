@@ -43,38 +43,6 @@
             return $expiry_date;
         }
 
-        public static function is_relevant( $coupon, $product_id )
-        {
-            $applied_coupon_code = '';
-
-            $applied_coupon =  new WC_Coupon( $coupon );
-
-            $coupon_expires = self::get_expired_date($applied_coupon);
-
-            if ( $coupon_expires ) {
-                $coupon_expires = $coupon_expires->getTimestamp();
-                if ( $coupon_expires <= time() ) {
-
-                    // update coupons list if current coupon expires
-                    $updated_list = apply_filters('wcac_available_coupons_for_product', [], $product_id, 1);
-
-                    if ( isset( $updated_list['apply']['coupon_code'] ) ) {
-                        return $updated_list['apply']['coupon_code'];
-                    }
-
-                    return '';
-                }
-            }
-
-            $product = wc_get_product( $product_id );
-
-            if ( $applied_coupon->is_valid_for_product( $product ) ) {
-                $applied_coupon_code  = $coupon;
-            }
-
-            return $applied_coupon_code;
-        }
-
         /**
          * Formatted coupon data for display
          */
@@ -127,6 +95,23 @@
 
             }
             return $coupon_data;
+        }
+
+        public static function get_cached_for_product($product_id)
+        {
+            if ( ! empty( $_COOKIE['wcac_product_' . $product_id . '_coupon'] ) ) {
+                $code = $_COOKIE['wcac_product_' . $product_id . '_coupon'];
+
+                $coupon_id = wc_get_coupon_id_by_code($code);
+                $coupon =  new WC_Coupon( $coupon_id );
+                $product = wc_get_product($product_id);
+
+                if ( is_object($coupon) || $coupon->is_valid_for_product( $product ) ) {
+                    return $coupon;
+                }
+            }
+
+            return null;
         }
 
     }

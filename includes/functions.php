@@ -38,14 +38,12 @@
 
     function wcac_add_price_hooks()
     {
-        add_filter( 'woocommerce_product_is_on_sale', [WCAC_Product::class, 'is_on_sale'], 10, 2 );
-        add_filter( 'woocommerce_product_get_price',  [WCAC_Product::class, 'get_sale_price'], 10, 2 );
+        add_filter( 'woocommerce_product_get_sale_price',  [WCAC_Product::class, 'get_sale_price'], 100, 2 );
     }
 
     function wcac_remove_price_hooks()
     {
-        remove_filter( 'woocommerce_product_is_on_sale', [WCAC_Product::class, 'is_on_sale'], 10, 2 );
-        remove_filter( 'woocommerce_product_get_price',  [WCAC_Product::class, 'get_sale_price'], 10, 2 );
+        remove_filter( 'woocommerce_product_get_sale_price',  [WCAC_Product::class, 'get_sale_price'], 100, 2 );
     }
 
     /**
@@ -105,3 +103,65 @@
         return sanitize_text_field( trim( get_option( $key ) ) );
     }
 
+    function wcac_get_product_active_coupon( $product )
+    {
+        if ( ! is_object( $product ) ) {
+            $product = wc_get_product($product);
+        }
+
+        if ( ! is_callable( array( $product, 'get_id' ) ) ) {
+            return [];
+        }
+
+        $result = [];
+
+        $coupon = WCAC_Coupon::get_cached_for_product($product->get_id());
+
+        if ( $coupon && $coupon->is_valid_for_product( $product ) ) {
+
+            wcac_remove_price_hooks();
+
+            $result = [
+                'coupon_code'   => $coupon->get_code(),
+                'product_price' => WCAC_Product::get_price_after_coupon($product, $coupon),
+            ];
+
+            wcac_add_price_hooks();
+
+            return $result;
+        }
+
+        $coupons = apply_filters('wcac_available_coupons_for_product', [], $product->get_id(), 1);
+
+        if ( count($coupons) > 0 ) {
+
+            $min_price = PHP_FLOAT_MAX;
+            $min_index = -1;
+
+            foreach ($coupons as $i => $coupon) {
+
+                if ( ! is_object( $coupon ) || ! is_callable( array( $coupon, 'get_id' ) ) ) {
+                    continue;
+                }
+
+                $_price = WCAC_Product::get_price_after_coupon($product, $coupon);
+
+                if ( $_price < $min_price ) {
+                    $min_price = $_price;
+                    $min_index = $i;
+                }
+
+            }
+
+            if ( $min_index >= 0 ) {
+                $result = [
+                    'coupon_code'   => $coupons[ $min_index ]->get_code(),
+                    'product_price' => $min_price,
+                ];
+            }
+
+        }
+
+        return $result;
+
+    }
