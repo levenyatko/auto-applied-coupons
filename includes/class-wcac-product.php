@@ -177,15 +177,12 @@
 
         public static function get_price_html( $price, $product )
         {
-            if ( is_cart() || is_checkout() || is_admin() || ! wcac_should_make_sale() ) {
-                return $price;
-            }
 
             if ( in_array($product::class, ['WC_Product_Variation', 'WC_Product_Simple']) ) {
 
-                $product_price = $product->get_price();
-
                 wcac_remove_price_hooks();
+
+                $product_price = $product->get_price();
 
                 $coupon_data =  wcac_get_product_active_coupon($product);
 

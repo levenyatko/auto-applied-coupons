@@ -165,3 +165,14 @@
         return $result;
 
     }
+
+    function wcac_get_price_html_func( $price, $product )
+    {
+        if ( is_cart() || is_checkout() || is_admin() || ! wcac_should_make_sale() ) {
+            return $price;
+        }
+
+        $price = WCAC_Product::get_price_html($price, $product);
+
+        return $price;
+    }

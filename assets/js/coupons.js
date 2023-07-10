@@ -89,7 +89,7 @@ jQuery( function( $ ) {
 
                             let $appliedCoupon = $('input[name=wcac-current-coupon-code]:checked');
                             if ( $appliedCoupon.length ) {
-                                wcacCouponsList.updateProductCoupon( $appliedCoupon.val() );
+                              //  wcacCouponsList.updateProductCoupon( $appliedCoupon.val() );
                             }
 
                         } else {
@@ -109,9 +109,11 @@ jQuery( function( $ ) {
                 url: wc_add_to_cart_params.ajax_url,
                 type: 'POST',
                 data: {
-                    'action'     : 'wcac_get_sale_price',
-                    'product_id' : this.productId,
-                    'coupon'     : coupon_code
+                    'action'       : 'wcac_get_sale_price',
+                    'product_id'   : this.productId,
+                    'is_variation' : this.isVariableProduct,
+                    'variation_id' : this.variationId,
+                    'coupon'       : coupon_code
                 },
                 beforeSend: function () {
                     wcacCouponsList.showLoader();

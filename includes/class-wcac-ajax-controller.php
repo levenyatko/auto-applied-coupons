@@ -14,7 +14,12 @@
         public static function get_product_sale_price()
         {
             if ( ! empty($_POST['product_id']) && ! empty($_POST['coupon']) ) {
-                $product = wc_get_product( (int)$_POST['product_id'] );
+
+                if ( ! empty($_POST['is_variation']) && ! empty($_POST['variation_id']) ) {
+                    $product = wc_get_product( (int)$_POST['variation_id'] );
+                } else {
+                    $product = wc_get_product( (int)$_POST['product_id'] );
+                }
 
                 if ( ! $product || ! is_callable( array( $product, 'get_id' ) ) ) {
                     wp_send_json_error(['msg' => __('Please, check the product', 'wcac')]);
@@ -23,7 +28,7 @@
                 $coupon_id = wc_get_coupon_id_by_code($_POST['coupon']);
                 if ( $coupon_id ) {
                     wp_send_json_success([
-                        'new_price_html' => $product->get_price_html()
+                        'new_price_html' => WCAC_Product::get_price_html($product->get_price(), $product)
                     ]);
                 }
 

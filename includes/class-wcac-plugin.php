@@ -53,7 +53,7 @@ if ( ! class_exists( 'WCAC_Plugin' ) ) {
             add_action('wcac_update_coupons_for_product', [WCAC_Product::class, 'update_coupons_list'], 10, 1);
 
             if ( wcac_should_make_sale() ) {
-                add_filter('woocommerce_get_price_html',  [WCAC_Product::class, 'get_price_html'], 100, 2 );
+                add_filter('woocommerce_get_price_html',  'wcac_get_price_html_func', 100, 2 );
                 add_filter('woocommerce_variation_prices', [WCAC_Product::class, 'get_variation_prices'], 15, 3);
             }
 
