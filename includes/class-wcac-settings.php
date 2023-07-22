@@ -22,6 +22,8 @@
             add_action( 'woocommerce_settings_'.self::$tab_name, [__CLASS__, 'display'] );
             add_action( 'woocommerce_update_options_' . self::$tab_name,  [__CLASS__, 'update_settings'] );
 
+            add_filter( 'plugin_action_links_woocommerce-auto-coupons/woocommerce-auto-coupons.php', [__CLASS__, 'plugin_settings_link'] );
+
         }
 
         public static function add_tab( $settings_tabs )
@@ -153,7 +155,18 @@
             woocommerce_update_options( $settings );
         }
 
+        public static function plugin_settings_link( $links )
+        {
+            $url = esc_url( admin_url('admin.php?page=wc-settings&tab=wcacoupons') );
 
+            $settings_link = "<a href='$url'>" . __( 'Settings' ) . '</a>';
+
+            array_push(
+                $links,
+                $settings_link
+            );
+            return $links;
+        }
     }
 
     WCAC_Settings::init();
