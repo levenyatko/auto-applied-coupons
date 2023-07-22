@@ -1,6 +1,5 @@
-=== Woocommerce Auto Coupons ===
+=== Auto Applied Coupons ===
 Contributors: levenyatko
-Donate link: https://www.buymeacoffee.com/levenyatko
 Tags: woocommerce, e-commerce, coupons, discounts
 Requires at least: 4.9
 Requires PHP: 7.4
@@ -9,11 +8,11 @@ Stable tag: 1.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-The Woocommerce Auto Coupons plugin is a great solution for WooCommerce sites with a large number of coupons.
+The Auto Applied Coupons plugin is a great solution for WooCommerce sites with a large number of coupons.
 
 == Description ==
 
-The Woocommerce Auto Coupons plugin allows you to enhance your WooCommerce store by displaying a comprehensive list of available coupons directly on the product page. It also enables the automatic application of a coupon when a product is added to the cart. Additionally, customers can view the discounted product price in the shop after the coupon is applied.
+The Auto Applied Coupons plugin allows you to enhance your WooCommerce store by displaying a comprehensive list of available coupons directly on the product page. It also enables the automatic application of a coupon when a product is added to the cart. Additionally, customers can view the discounted product price in the shop after the coupon is applied.
 
 == Key Features ==
 
@@ -30,7 +29,7 @@ The Woocommerce Auto Coupons plugin allows you to enhance your WooCommerce store
 
 1. In the admin panel to the Plugins' menu in WordPress.
 2. On the top of the page press the 'Add new' button.
-3. In the search field type 'Woocommerce Auto Coupons', then click 'Search Plugins' or press Enter.
+3. In the search field type 'Auto Applied Coupons', then click 'Search Plugins' or press Enter.
 4. Once you’ve found it, install it by clicking 'Install Now' and WordPress will take it from there.
 5. Activate the plugin after installation.
 6. Follow the plugin Settings link to configure the plugin.

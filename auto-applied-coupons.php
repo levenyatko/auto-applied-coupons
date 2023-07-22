@@ -1,6 +1,6 @@
 <?php
     /**
-     * Plugin Name:       Woocommerce Auto Coupons
+     * Plugin Name:       Auto Applied Coupons
      * Description:       Takes the use of coupons to the next level.
      * Author:            Daria Levchenko
      * Author URI:        https://github.com/levenyatko
