@@ -16,7 +16,7 @@
 
                 if ( ! empty($auto_apply_coupon) && 'yes' == $auto_apply_coupon ) {
                     // apply coupon with product
-                    add_action('woocommerce_add_cart_item_data', [ self::class, 'apply' ], 10, 2);
+                    add_action('woocommerce_add_to_cart', [ self::class, 'apply_coupon' ], 10, 6);
                 }
 
                 add_action('wp_print_styles', [ self::class, 'print_styles' ], 10);
@@ -141,12 +141,11 @@
             <?php
         }
 
-        public static function apply($cart_item_data, $product_id)
+        public static function apply_coupon($cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data)
         {
             if ( isset($_POST['wcac-current-coupon-code']) ) {
                 WC()->cart->apply_coupon( $_POST['wcac-current-coupon-code'] );
             }
 
-            return $cart_item_data;
         }
     }

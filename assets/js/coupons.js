@@ -89,7 +89,7 @@ jQuery( function( $ ) {
 
                             let $appliedCoupon = $('input[name=wcac-current-coupon-code]:checked');
                             if ( $appliedCoupon.length ) {
-                              //  wcacCouponsList.updateProductCoupon( $appliedCoupon.val() );
+                                wcacCouponsList.updateProductCoupon( $appliedCoupon.val() );
                             }
 
                         } else {
