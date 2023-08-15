@@ -45,7 +45,7 @@
                 [
                     'name'      => _x( 'Auto Coupons Settings', 'options section heading', 'wcac' ),
                     'type'      => 'title',
-                    'desc'      => __('Settings for Woocommerce Auto Coupons plugin.', 'wcac'),
+                    'desc'      => __('Settings for Auto Applied Coupons plugin.', 'wcac'),
                     'id'        => self::$option_prefix . '_settings_title',
                 ],
                 [
