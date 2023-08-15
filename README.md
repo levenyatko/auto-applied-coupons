@@ -1,6 +1,6 @@
-# Woocommerce Auto Coupons
+# Auto Applied Coupons
 
-The Woocommerce Auto Coupons plugin allows you display a comprehensive list of available coupons directly on the product page. It also enables the automatic application of a coupon when a product is added to the cart. Additionally, customers can view the discounted product price in the shop after the coupon is applied.
+The Auto Applied Coupons plugin allows you to display a comprehensive list of available coupons directly on the product page. It also enables the automatic application of a coupon when a product is added to the cart. Additionally, customers can view the discounted product price in the shop after the coupon is applied.
 
 ## Key Features
 
@@ -29,6 +29,6 @@ Absolutely! You can find new  fields on the 'Usage restriction' tab on the coupo
 
 Of course. In the admin panel, go to the WooCommerce settings page and select the "Coupons" tab. Here you can set the background and text color for active and inactive coupon cards.
 
-**How can I rewrite the template for the available coupons list?**
+**How can I rewrite the template for the available coupon list?**
 
-Copy files from the '/wp-content/plugins/woocommerce-auto-coupons/templates' folder to a new folder in your theme named 'coupons'.
+Copy files from the '/wp-content/plugins/auto-applied-coupons/templates' folder to a new folder in your theme named 'coupons'.
