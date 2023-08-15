@@ -3,8 +3,8 @@ Contributors: levenyatko
 Tags: woocommerce, e-commerce, coupons, discounts
 Requires at least: 4.9
 Requires PHP: 7.4
-Tested up to: 6.2.2
-Stable tag: 1.1.0
+Tested up to: 6.3
+Stable tag: 1.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -67,6 +67,11 @@ Copy files from the '/wp-content/plugins/woocommerce-auto-coupons/templates' fol
 
 
 == Changelog ==
+
+= 1.1.1 =
+* Updated compatibility with Woocommerce to 8.0.1
+* Updated compatibility with WordPress to 6.3
+
 = 1.1.0 =
 * Added Settings link to the plugin on the Plugins page
 * Fixed compatibility with Woocommerce 7.9

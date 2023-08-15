@@ -4,11 +4,11 @@
      * Description:       Takes the use of coupons to the next level.
      * Author:            Daria Levchenko
      * Author URI:        https://github.com/levenyatko
-     * Version:           1.1.0
+     * Version:           1.1.1
      * Text Domain:       wcac
      * Domain Path:       /languages
-     * Tested up to:      6.2.2
-     * WC tested up to:   7.9
+     * Tested up to:      6.3
+     * WC tested up to:   8.0.1
      * Requires PHP:      7.4
      */
 
