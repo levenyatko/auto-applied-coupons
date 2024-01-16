@@ -2,9 +2,9 @@
 Contributors: levenyatko
 Tags: woocommerce, e-commerce, coupons, discounts
 Requires at least: 4.9
-Requires PHP: 7.4
-Tested up to: 6.3
-Stable tag: 1.1.1
+Requires PHP: 8.0
+Tested up to: 6.4.2
+Stable tag: 1.4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,7 +18,6 @@ The Auto Applied Coupons plugin allows you to enhance your WooCommerce store by 
 
 - Display a comprehensive list of available coupons for each product on the product page.
 - Show/hide specific coupons from the list based on your preferences.
-- Set additional restriction rules for coupons based on product attributes.
 - Automatically add a coupon to the cart when a product is added.
 - Customers can view the discounted product price in the shop after the coupon is applied.
 - Customize the colors and style of the coupon card to match your store's branding.
@@ -48,19 +47,15 @@ You can customize the display settings in the plugin's configuration options.
 = How can I show specific coupon on the list? =
 Go to the coupon edit page. In the 'General' tab you can choose whether to show or hide this coupon.
 
-= Can I set additional rules for coupons based on product attributes? =
-Absolutely! You can find new  fields on the 'Usage restriction' tab on the coupon edit page
-
 = Can I change the color scheme for the coupons displayed? =
 Of course. In the admin panel, go to the WooCommerce settings page and select the "Coupons" tab. Here you can set the background and text color for active and inactive coupon cards.
 
 = How can I rewrite the template for the available coupons list? =
-Copy files from the '/wp-content/plugins/woocommerce-auto-coupons/templates' folder to a new folder in your theme named 'coupons'.
+Copy files from the '/wp-content/plugins/auto-applied-coupons/templates' folder to a new folder in your theme named 'coupons'.
 
 == Screenshots ==
 1. Edit coupon page. General tab
 2. Edit coupon page. Usage restriction tab
-3. Plugin settings
 4. Product page with new coupon blocks
 
 == Upgrade Notice ==
@@ -68,14 +63,6 @@ Copy files from the '/wp-content/plugins/woocommerce-auto-coupons/templates' fol
 
 == Changelog ==
 
-= 1.1.1 =
-* Updated compatibility with Woocommerce to 8.0.1
-* Updated compatibility with WordPress to 6.3
-
-= 1.1.0 =
-* Added Settings link to the plugin on the Plugins page
-* Fixed compatibility with Woocommerce 7.9
-* Readme.txt file changes
-
-= 1.0.0 =
-* Initial release
+= 1.4.0 =
+* Fixed compatibility with Woocommerce to 8.2.1
+* Updated compatibility with WordPress to 6.4

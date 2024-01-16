@@ -1,178 +1,104 @@
 <?php
 
-    function wcac_get_instance()
-    {
-        return WCAC_Plugin::instance();
-    }
+	use Auto_Applied_Coupons\Models\WCAC_Product;
 
-    function wcac_where_query_allow_is_null ( $where )
-    {
-        return str_replace("= 'IS NULL'", ' IS NULL ', $where);
-    }
+	function wcac_add_price_hooks() {
+		add_filter( 'woocommerce_product_get_sale_price', array( WCAC_Product::class, 'get_sale_price' ), 100, 2 );
+	}
 
-    function wcac_is_coupons_displayed()
-    {
-        $show_available_coupons = wcac_get_option( 'wcac_available_display' );
-        $show_available_coupons = apply_filters('wcac_show_available_coupons', $show_available_coupons);
+	function wcac_remove_price_hooks() {
+		remove_filter( 'woocommerce_product_get_sale_price', array( WCAC_Product::class, 'get_sale_price' ), 100, 2 );
+	}
 
-        if ( ! empty($show_available_coupons) && 'yes' == $show_available_coupons ) {
-            return true;
-        }
+	function wcac_get_price_html_func( $price, $product ) {
+		if ( is_cart() || is_checkout() || is_admin() || ! \Auto_Applied_Coupons\Utils\WC_Util::should_make_sale()() ) {
+			return $price;
+		}
 
-        return false;
-    }
+		$price = WCAC_Product::get_price_html( $price, $product );
 
-    function wcac_should_make_sale()
-    {
-        if ( wcac_is_coupons_displayed() ) {
-            $apply_coupon_to_price = wcac_get_option('wcac_make_price_sale');
-            $apply_coupon_to_price = apply_filters('wcac_apply_coupon_to_price', $apply_coupon_to_price);
+		return $price;
+	}
 
-            if (!empty($apply_coupon_to_price) && 'yes' == $apply_coupon_to_price) {
-                return true;
-            }
-        }
+	function wcac_show_available_coupons( $product_id, $ignore_cached = false ) {
 
-        return false;
-    }
+		$coupons = apply_filters( 'wcac_available_coupons_for_product', array(), $product_id, $ignore_cached );
 
-    function wcac_add_price_hooks()
-    {
-        add_filter( 'woocommerce_product_get_sale_price',  [WCAC_Product::class, 'get_sale_price'], 100, 2 );
-    }
+		if ( empty( $coupons ) ) {
+			return;
+		}
 
-    function wcac_remove_price_hooks()
-    {
-        remove_filter( 'woocommerce_product_get_sale_price',  [WCAC_Product::class, 'get_sale_price'], 100, 2 );
-    }
+		$product = new WCAC_Product($product_id);
 
-    /**
-     * Function to get attributes of a given product.
-     */
-    function wcac_get_product_attributes( $product = null )
-    {
-        $product_attributes_ids = array();
+		$applied_coupon = $product->get_active_coupon();
+		$applied_code   = '';
 
-        if ( is_numeric( $product ) ) {
-            $product = wc_get_product( $product );
-        }
+		if ( ! empty( $applied_coupon ) ) {
+			$applied_code = $applied_coupon->get_code();
+		}
 
-        if ( ! is_a( $product, 'WC_Product' ) ) {
-            return $product_attributes_ids;
-        }
+		$displayed_count = apply_filters( 'wcac_coupons_count_to_show', 5 );
 
-        $product_attributes = $product->get_attributes();
+		$i = 0;
+		foreach ( $coupons as $coupon_id ) {
 
-        if ( ! empty( $product_attributes ) ) {
+			if ( $i >= $displayed_count ) {
+				break;
+			}
 
-            if ( true === $product->is_type( 'variation' ) ) {
+			$coupon = new \WC_Coupon( $coupon_id );
 
-                foreach ( $product_attributes as $variation_taxonomy => $variation_slug ) {
-                    $variation_attribute = get_term_by( 'slug', $variation_slug, $variation_taxonomy );
-                    if ( is_object( $variation_attribute ) ) {
-                        $product_attributes_ids[] = $variation_attribute->term_id;
-                    }
-                }
+			$coupon_amount    = $coupon->get_amount();
+			$is_free_shipping = ( $coupon->get_free_shipping() ) ? 'yes' : 'no';
+			$discount_type    = $coupon->get_discount_type();
 
-            } else {
+			$coupon_date_expires = $coupon->get_date_expires();
 
-                $product_id = ( is_object( $product ) && is_callable( array( $product, 'get_id' ) ) ) ? $product->get_id() : 0;
-                if ( ! empty( $product_id ) ) {
-                    foreach ( $product_attributes as $attribute ) {
-                        if ( isset( $attribute['is_taxonomy'] ) && ! empty( $attribute['is_taxonomy'] ) ) {
-                            $attribute_taxonomy_name = $attribute['name'];
-                            $product_term_ids        = wc_get_product_terms( $product_id, $attribute_taxonomy_name, array( 'fields' => 'ids' ) );
-                            if ( ! empty( $product_term_ids ) && is_array( $product_term_ids ) ) {
-                                foreach ( $product_term_ids as $product_term_id ) {
-                                    $product_attributes_ids[] = $product_term_id;
-                                }
-                            }
-                        }
-                    }
-                }
+			$expiry_date      = null;
+			$expiry_timestamp = '';
 
-            }
+			if ( $coupon_date_expires ) {
+				if ( $coupon_date_expires instanceof \WC_DateTime ) {
+					$expiry_date = $coupon_date_expires;
+				} elseif ( is_int( $coupon_date_expires ) ) {
+					$expiry_date = new \DateTime( 'Y-m-d', $coupon_date_expires );
+				} else {
+					$expiry_date = new \DateTime( date( 'Y-m-d', $coupon_date_expires ) );
+				}
 
-        }
+				if ( ! empty( $expiry_date ) ) {
+					$expiry_timestamp = $expiry_date->getTimestamp();
+				}
+			}
 
-        return $product_attributes_ids;
-    }
+			$is_zero_amount_coupon = false;
 
-    function wcac_get_option($key)
-    {
-        return sanitize_text_field( trim( get_option( $key ) ) );
-    }
+			if ( ( empty( $coupon_amount ) ) && ( ( ! empty( $discount_type ) && ! in_array( $discount_type, array( 'free_gift', 'smart_coupon' ), true ) ) || ( 'yes' !== $is_free_shipping ) ) ) {
+				if ( 'yes' !== $is_free_shipping ) {
+					$is_zero_amount_coupon = true;
+				}
+			}
 
-    function wcac_get_product_active_coupon( $product )
-    {
-        if ( ! is_object( $product ) ) {
-            $product = wc_get_product($product);
-        }
+			if ( $is_zero_amount_coupon ) {
+				continue;
+			}
 
-        if ( ! is_callable( array( $product, 'get_id' ) ) ) {
-            return [];
-        }
+			if ( empty( $discount_type ) || ( ! empty( $expiry_timestamp ) && time() > $expiry_timestamp ) ) {
+				continue;
+			}
 
-        $result = [];
+			$wcac_coupon = new \Auto_Applied_Coupons\Models\WCAC_Coupon( $coupon );
 
-        $coupon = WCAC_Coupon::get_cached_for_product($product->get_id());
+			$args = array(
+				'product_id'     => $product_id,
+				'coupon_object'  => $coupon,
+				'coupon_expiry'  => $expiry_date,
+				'applied_coupon' => $applied_code,
+				'coupon_data'    => $wcac_coupon->get_meta_data(),
+			);
 
-        if ( $coupon && $coupon->is_valid_for_product( $product ) ) {
+			wc_get_template( 'card.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
 
-            wcac_remove_price_hooks();
-
-            $result = [
-                'coupon_code'   => $coupon->get_code(),
-                'product_price' => WCAC_Product::get_price_after_coupon($product, $coupon),
-            ];
-
-            wcac_add_price_hooks();
-
-            return $result;
-        }
-
-        $coupons = apply_filters('wcac_available_coupons_for_product', [], $product->get_id(), 1);
-
-        if ( count($coupons) > 0 ) {
-
-            $min_price = PHP_FLOAT_MAX;
-            $min_index = -1;
-
-            foreach ($coupons as $i => $coupon) {
-
-                if ( ! is_object( $coupon ) || ! is_callable( array( $coupon, 'get_id' ) ) ) {
-                    continue;
-                }
-
-                $_price = WCAC_Product::get_price_after_coupon($product, $coupon);
-
-                if ( $_price < $min_price ) {
-                    $min_price = $_price;
-                    $min_index = $i;
-                }
-
-            }
-
-            if ( $min_index >= 0 ) {
-                $result = [
-                    'coupon_code'   => $coupons[ $min_index ]->get_code(),
-                    'product_price' => $min_price,
-                ];
-            }
-
-        }
-
-        return $result;
-
-    }
-
-    function wcac_get_price_html_func( $price, $product )
-    {
-        if ( is_cart() || is_checkout() || is_admin() || ! wcac_should_make_sale() ) {
-            return $price;
-        }
-
-        $price = WCAC_Product::get_price_html($price, $product);
-
-        return $price;
-    }
+			++$i;
+		}
+	}

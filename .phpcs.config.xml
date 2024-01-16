@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- This file configures everything except the list of rules. -->
+<!-- The separation is so .github/files/phpcompatibility-dev-phpcs.xml can use the same config with a different rule set. -->
+<ruleset>
+    <config name="minimum_supported_wp_version" value="5.2" />
+    <config name="testVersion" value="7.4-" />
+
+    <!-- Check all PHP files in directory tree by default. -->
+    <arg name="extensions" value="php"/>
+    <file>.</file>
+
+    <!-- Show sniff codes in all reports -->
+    <arg value="s"/>
+
+    <arg name="colors"/>
+
+</ruleset>
