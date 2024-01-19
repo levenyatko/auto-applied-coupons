@@ -80,19 +80,11 @@
 			$custom_hooks->add_filter( new Hooks\Filters\Product_Coupons_List_Filter() );
 			$custom_hooks->add_filter( new Hooks\Filters\Coupon_Is_Valid_For_Product_Filter() );
 
+			// apply coupon to product price
+			$custom_hooks->add_filter( new Hooks\Filters\Get_Price_Html_Filter() );
+			$custom_hooks->add_filter( new Hooks\Filters\Variation_Prices_Filter() );
+
 			$custom_hooks->register();
-		}
-
-		private function init_hooks() {
-			/*
-
-			if ( wcac_should_make_sale() ) {
-				add_filter( 'woocommerce_get_price_html', 'wcac_get_price_html_func', 100, 2 );
-				add_filter( 'woocommerce_variation_prices', array( WCAC_Product::class, 'get_variation_prices' ), 15, 3 );
-			}
-
-			wcac_add_price_hooks();
-*/
 		}
 
 		/**

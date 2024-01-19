@@ -8,10 +8,9 @@
 	 * Text Domain:       wcac
 	 * Domain Path:       /languages
 	 * Tested up to:      6.4.2
-	 * WC tested up to:   8.5.0
+	 * WC tested up to:   8.5.1
 	 * Requires PHP:      8.0
 	 *
-	 * @package Auto_Applied_Coupons
 	 */
 
 	defined( 'ABSPATH' ) || exit;

@@ -32,8 +32,8 @@
 			}
 		}
 
-		public function get_price_after_active_coupon( $product_id = 0 ) {
-			$active_coupon = $this->get_active_coupon( $product_id );
+		public function get_price_after_active_coupon() {
+			$active_coupon = $this->get_active_coupon();
 
 			if ( ! empty( $active_coupon ) ) {
 				return $this->get_price_after_coupon( $active_coupon );
@@ -59,35 +59,6 @@
 
 			return wc_format_decimal( $_price, wc_get_price_decimals() );
 		}
-/*
-		public function get_sale_price( $price ) {
-			if ( empty($this->wc_product) ) {
-				return '';
-			}
-
-			$product_active_coupon = $this->get_active_coupon();
-			if ( ! empty( $product_active_coupon ) ) {
-				$price = $this->get_price_after_coupon( $product_active_coupon );
-			}
-
-			return $price;
-		}
-*/
-		public function get_variation_prices( $prices ) {
-			if ( empty($this->wc_product) ) {
-				return $prices;
-			}
-
-			foreach ( $prices['price'] as $variation_id => $price ) {
-				$price_after_coupon = $this->get_price_after_active_coupon( $variation_id );
-				if ( null !== $price_after_coupon ) {
-					$prices['price'][ $variation_id ]      = $price_after_coupon;
-					$prices['sale_price'][ $variation_id ] = $price_after_coupon;
-				}
-			}
-
-			return $prices;
-		}
 
 		public function get_price_html( $price ) {
 
@@ -105,64 +76,22 @@
 			return $price;
 		}
 
-		private function get_cached_coupon() {
+		public function get_active_coupon() {
 
-			if ( ! empty( $_COOKIE[ 'wcac_product_' . $this->product_id . '_coupon' ] ) ) {
-				$code = $_COOKIE[ 'wcac_product_' . $this->product_id . '_coupon' ];
+			$cookie_name = 'wcac_product_' . $this->wc_product->get_id() . '_coupon';
+
+			if ( ! empty( $_COOKIE[ $cookie_name ] ) ) {
+				$code = $_COOKIE[ $cookie_name ];
 
 				$coupon_id = wc_get_coupon_id_by_code( $code );
 				$coupon    = new \WC_Coupon( $coupon_id );
-				$product   = wc_get_product( $this->product_id );
 
-				if ( is_object( $coupon ) || $coupon->is_valid_for_product( $product ) ) {
+				if ( is_object( $coupon ) && $coupon->is_valid_for_product( $this->wc_product ) ) {
 					return $coupon;
 				}
 			}
 
 			return null;
-		}
-
-		public function get_active_coupon( $product_id = 0 ) {
-
-			$product_active_coupon = null;
-
-			$coupon = $this->get_cached_coupon();
-
-			if ( empty($product_id) ) {
-				$product_id = $this->wc_product;
-			}
-
-			if ( $coupon && $coupon->is_valid_for_product( $product_id ) ) {
-				return $coupon;
-			}
-
-			$coupons = apply_filters( 'wcac_available_coupons_for_product', array(), $this->product_id, 1 );
-
-			if ( count( $coupons ) > 0 ) {
-
-				$min_price = PHP_FLOAT_MAX;
-				$min_index = -1;
-
-				foreach ( $coupons as $i => $coupon ) {
-
-					if ( ! is_object( $coupon ) || ! is_callable( array( $coupon, 'get_id' ) ) ) {
-						continue;
-					}
-
-					$_price = $this->get_price_after_coupon( $coupon );
-
-					if ( $_price < $min_price ) {
-						$min_price = $_price;
-						$min_index = $i;
-					}
-				}
-
-				if ( $min_index >= 0 ) {
-					$product_active_coupon = $coupons[ $min_index ];
-				}
-			}
-
-			return $product_active_coupon;
 		}
 
 		 public function get_attributes() {

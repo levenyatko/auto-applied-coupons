@@ -46,7 +46,7 @@ class Get_Product_Coupons_AJAX_Action implements AJAX_Action_Interface {
 				if ( $product && is_callable( array( $product, 'get_id' ) ) ) {
 					ob_start();
 
-					wcac_show_available_coupons( $product->get_id(), true );
+					wcac_show_available_coupons( $product->get_id() );
 
 					$list_html = ob_get_contents();
 					ob_end_clean();

@@ -10,15 +10,6 @@
 		remove_filter( 'woocommerce_product_get_sale_price', array( WCAC_Product::class, 'get_sale_price' ), 100, 2 );
 	}
 
-	function wcac_get_price_html_func( $price, $product ) {
-		if ( is_cart() || is_checkout() || is_admin() || ! \Auto_Applied_Coupons\Utils\WC_Util::should_make_sale()() ) {
-			return $price;
-		}
-
-		$price = WCAC_Product::get_price_html( $price, $product );
-
-		return $price;
-	}
 
 	function wcac_show_available_coupons( $product_id, $ignore_cached = false ) {
 
