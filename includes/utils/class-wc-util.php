@@ -47,14 +47,8 @@
 		public static function should_make_sale() {
 			$show_coupons_block = apply_filters('wcac_show_available_coupons', true);
 			if ( $show_coupons_block ) {
-				$apply_coupon_to_price = Options_Util::get_option( 'wcac_make_price_sale' );
-				$apply_coupon_to_price = apply_filters( 'wcac_apply_coupon_to_price', $apply_coupon_to_price );
-
-				if ( ! empty( $apply_coupon_to_price ) && 'yes' == $apply_coupon_to_price ) {
-					return true;
-				}
+				return apply_filters( 'wcac_apply_coupon_to_price', false );
 			}
-
 			return false;
 		}
 

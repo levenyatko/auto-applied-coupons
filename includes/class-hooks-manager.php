@@ -9,7 +9,7 @@
 
 	use Auto_Applied_Coupons\Interfaces\Actions_Interface;
 	use Auto_Applied_Coupons\Interfaces\Filters_Interface;
-	use Auto_Applied_Coupons\Utils\Options_Util;
+	use Auto_Applied_Coupons\Utils\General_Util;
 
 	defined( 'ABSPATH' ) || exit;
 
@@ -44,8 +44,8 @@ class Hooks_Manager {
 
 		foreach ( $actions as $action_name => $action_details ) {
 			$method        = $action_details[0];
-			$priority      = Options_Util::default_value( $action_details[1], 10 );
-			$accepted_args = Options_Util::default_value( $action_details[2], 1 );
+			$priority      = General_Util::default_value( $action_details[1], 10 );
+			$accepted_args = General_Util::default_value( $action_details[2], 1 );
 
 			add_action(
 				$action_name,
@@ -68,8 +68,8 @@ class Hooks_Manager {
 
 		foreach ( $filters as $filter_name => $filter_details ) {
 			$method        = $filter_details[0];
-			$priority      = Options_Util::default_value( $filter_details[1], 10 );
-			$accepted_args = Options_Util::default_value( $filter_details[2], 1 );
+			$priority      = General_Util::default_value( $filter_details[1], 10 );
+			$accepted_args = General_Util::default_value( $filter_details[2], 1 );
 
 			add_filter(
 				$filter_name,

@@ -2,15 +2,18 @@
     namespace Auto_Applied_Coupons\Public;
 
 	use Auto_Applied_Coupons\Interfaces\Actions_Interface;
-	use Auto_Applied_Coupons\Interfaces\Filters_Interface;
-	use Auto_Applied_Coupons\Models\WCAC_Coupon;
-	use Auto_Applied_Coupons\Models\WCAC_Product;
-	use Auto_Applied_Coupons\Utils\Options_Util;
+	use Auto_Applied_Coupons\Plugin_Options;
 	use Auto_Applied_Coupons\Utils\WC_Util;
 
 	defined( 'ABSPATH' ) || exit;
 
-class Coupons_Block implements Actions_Interface, Filters_Interface {
+class Coupons_Block implements Actions_Interface {
+
+	private $plugin_options;
+
+	public function __construct(Plugin_Options $plugin_options) {
+		$this->plugin_options = $plugin_options;
+	}
 
 	/**
 	 * @inheritDoc
@@ -18,43 +21,22 @@ class Coupons_Block implements Actions_Interface, Filters_Interface {
 	public function get_actions() {
         $actions = array();
 
-		if ( $this->is_coupons_block_enabled() ) {
+		$show_coupons_block = apply_filters('wcac_show_available_coupons', true);
+		if ( $show_coupons_block ) {
 			$actions = array(
 				'woocommerce_after_add_to_cart_button' => array('display', 11),
                 'wp_enqueue_scripts'                   => array('enqueue'),
                 'wp_print_styles'                      => array('print_styles', 10),
 			);
 
-			$auto_apply_coupon = Options_Util::get_option( 'wcac_auto_apply_coupon' );
-
-			if ( ! empty( $auto_apply_coupon ) && 'yes' == $auto_apply_coupon ) {
-				// apply coupon with product
+			$auto_apply_coupon = apply_filters('wcac_auto_apply_coupon', false);
+			if ( $auto_apply_coupon ) {
+				// add coupon to cart with product
 				$actions[ 'woocommerce_add_to_cart' ] = array( 'apply_coupon', 10, 6 );
 			}
 		}
 
         return $actions;
-	}
-
-    public function get_filters() {
-        return array(
-            'wcac_show_available_coupons' => array('is_coupons_block_enabled'),
-        );
-    }
-
-	/**
-	 * If coupons frontend block should be displayed.
-	 *
-	 * @return bool
-	 */
-	public function is_coupons_block_enabled($show_coupons_block = false) {
-		$show_available_coupons = Options_Util::get_option( 'wcac_available_display' );
-
-		if ( ! empty( $show_available_coupons ) && 'yes' == $show_available_coupons ) {
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
@@ -70,7 +52,7 @@ class Coupons_Block implements Actions_Interface, Filters_Interface {
 
 		$args = array(
 			'product_id'  => $product_id,
-            'block_title' => Options_Util::get_option( 'wcac_front_block_title' ),
+            'block_title' => $this->plugin_options->get( 'wcac_front_block_title' ),
 		);
 
 		wc_get_template( 'list.php', $args, 'coupons', WCAC_PLUGIN_DIR . 'templates/' );
@@ -96,11 +78,11 @@ class Coupons_Block implements Actions_Interface, Filters_Interface {
 		}
 	}
 
-	public static function print_styles() {
-		$base_bg     = Options_Util::get_option( 'wcac_coupon_bg_color' );
-		$base_text   = Options_Util::get_option( 'wcac_coupon_text_color' );
-		$accent_bg   = Options_Util::get_option( 'wcac_active_coupon_bg_color' );
-		$accent_text = Options_Util::get_option( 'wcac_active_coupon_text_color' );
+	public function print_styles() {
+		$base_bg     = $this->plugin_options->get( 'wcac_coupon_bg_color' );
+		$base_text   = $this->plugin_options->get( 'wcac_coupon_text_color' );
+		$accent_bg   = $this->plugin_options->get( 'wcac_active_coupon_bg_color' );
+		$accent_text = $this->plugin_options->get( 'wcac_active_coupon_text_color' );
 		?>
 			<style id="wcac-coupon-colors">
 				:root {
@@ -113,7 +95,7 @@ class Coupons_Block implements Actions_Interface, Filters_Interface {
 			<?php
 	}
 
-	public static function apply_coupon( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
+	public function apply_coupon( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
 		if ( isset( $_POST['wcac-current-coupon-code'] ) ) {
 			WC()->cart->apply_coupon( $_POST['wcac-current-coupon-code'] );
 		}

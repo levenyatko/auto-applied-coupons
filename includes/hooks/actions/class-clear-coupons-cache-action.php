@@ -5,10 +5,16 @@
 	use Auto_Applied_Coupons\Admin\Notices\Clear_Coupons_Cache_Notice;
 	use Auto_Applied_Coupons\Interfaces\Actions_Interface;
 	use Auto_Applied_Coupons\Models\Product_Transient;
-	use Auto_Applied_Coupons\Utils\Options_Util;
+	use Auto_Applied_Coupons\Plugin_Options;
 	use Auto_Applied_Coupons\Utils\WCAC_Transient;
 
 	class Clear_Coupons_Cache_Action implements Actions_Interface {
+
+		private $plugin_options;
+
+		public function __construct(Plugin_Options $plugin_options) {
+			$this->plugin_options = $plugin_options;
+		}
 
 		public function get_actions() {
 			$actions = array(
@@ -16,7 +22,7 @@
 				'admin_post_wcac_clear_transient_action' => array('clear_transient_cache'),
 			);
 
-			$clear_cache_mode = Options_Util::get_option( 'wcac_clear_cache_mode' );
+			$clear_cache_mode = $this->plugin_options->get( 'wcac_clear_cache_mode' );
 			$clear_cache_mode = apply_filters( 'wcac_clear_cache_mode', $clear_cache_mode );
 
 			if ( 'manual' != $clear_cache_mode ) {

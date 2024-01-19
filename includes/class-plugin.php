@@ -31,6 +31,13 @@
 		public $hooks_manager;
 
 		/**
+		 * An instance with plugin settings.
+		 *
+		 * @var Plugin_Options $plugin_options
+		 */
+		public $plugin_options;
+
+		/**
 		 * Ajax actions registrar class.
 		 *
 		 * @var AJAX_Actions_Registrar $ajax_actions
@@ -44,6 +51,7 @@
 		 */
 		public function init() {
 			$this->hooks_manager = new Hooks_Manager();
+			$this->plugin_options = new Plugin_Options();
 
 			$this->register_ajax_actions();
 			$this->register_custom_meta();
@@ -54,7 +62,7 @@
 				$this->hooks_manager->register( new Settings_Tab() );
 			}
 
-			$this->hooks_manager->register( new Public\Coupons_Block() );
+			$this->hooks_manager->register( new Public\Coupons_Block( $this->plugin_options ) );
 		}
 
 		private function register_ajax_actions() {
@@ -74,11 +82,13 @@
 		private function register_custom_hooks() {
 			$custom_hooks = new Custom_Hooks_Registrar( $this->hooks_manager );
 
-			$custom_hooks->add_action( new Hooks\Actions\Clear_Coupons_Cache_Action() );
+			$custom_hooks->add_action( new Hooks\Actions\Clear_Coupons_Cache_Action( $this->plugin_options ) );
 
 			$custom_hooks->add_filter( new Hooks\Filters\Database_Query_Filter() );
 			$custom_hooks->add_filter( new Hooks\Filters\Product_Coupons_List_Filter() );
 			$custom_hooks->add_filter( new Hooks\Filters\Coupon_Is_Valid_For_Product_Filter() );
+
+			$custom_hooks->add_filter( new Hooks\Filters\Coupon_Block_Custom_Filters( $this->plugin_options ) );
 
 			// apply coupon to product price
 			$custom_hooks->add_filter( new Hooks\Filters\Get_Price_Html_Filter() );
