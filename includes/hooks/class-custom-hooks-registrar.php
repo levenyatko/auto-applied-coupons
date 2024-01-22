@@ -1,4 +1,9 @@
 <?php
+	/**
+	 * Registrar for hook and action callbacks.
+	 *
+	 * @package Auto_Applied_Coupons\Hooks
+	 */
 
 namespace Auto_Applied_Coupons\Hooks;
 
@@ -7,28 +12,33 @@ use Auto_Applied_Coupons\Interfaces\Filters_Interface;
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Class Custom_Hooks_Registrar
- */
 class Custom_Hooks_Registrar {
 
 	/**
+	 * Plugin hooks manager class.
+	 *
 	 * @var Hooks_Manager $hooks_manager
 	 */
 	private $hooks_manager;
 
 	/**
+	 * Array of custom callbacks for actions.
+	 *
 	 * @var Actions_Interface[] $actions
 	 */
 	private $actions;
 
 	/**
+	 * Array of custom callbacks for filters.
+	 *
 	 * @var Filters_Interface[] $filters
 	 */
 	private $filters;
 
 	/**
 	 * Class construct.
+	 *
+	 * @param Hooks_Manager $hooks_manager Hooks manager object.
 	 */
 	public function __construct( $hooks_manager ) {
 		$this->hooks_manager = $hooks_manager;

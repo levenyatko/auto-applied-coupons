@@ -1,18 +1,20 @@
 <?php
 
-    if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
-    if ( empty( $coupon_object ) ) {
-        return;
-    }
+if ( empty( $coupon_object ) ) {
+	return;
+}
 
 	$description = $coupon_object->get_description();
 	$is_applied  = false;
 
 	$card_classes = array( 'wcac-coupon-card--wrapper' );
-    if ( isset( $applied_coupon ) && $applied_coupon == $coupon_object->get_code() ) {
-        $is_applied = true;
-    }
+if ( isset( $applied_coupon ) && $applied_coupon === $coupon_object->get_code() ) {
+	$is_applied = true;
+}
 
 	$card_classes = apply_filters( 'wcac_coupon_card_classes', $card_classes, $coupon_object, $applied_coupon );
 
@@ -23,13 +25,13 @@
 	<input type="radio"
 			id="<?php echo esc_attr( $item_id ); ?>"
 			name="wcac-current-coupon-code"
-            <?php checked( $coupon_object->get_code(), $applied_coupon ); ?>
+			<?php checked( $coupon_object->get_code(), $applied_coupon ); ?>
 			value="<?php echo esc_attr( $coupon_object->get_code() ); ?>"
 	>
 	<label for="<?php echo esc_attr( $item_id ); ?>" class="wcac-coupon-card--label">
 		<div class="wcac-coupon-amount wcac-coupon-container">
 			<div class="wcac-coupon-amount--value">
-				<?php echo apply_filters( 'wcac_coupon_amount_display', $coupon_data['coupon_amount'], $coupon_object ); ?>
+				<?php echo wp_kses_post( $coupon_data['coupon_amount'] ); ?>
 			</div>
 			<div class="wcac-coupon-amount--type">
 				<?php echo esc_html( $coupon_data['coupon_type'] ); ?>
@@ -39,13 +41,13 @@
 			<?php echo esc_html( $coupon_object->get_code() ); ?>
 		</div>
 		<?php
-            if ( ! isset( $coupon_expiry ) ) {
-	            $expiry_date_string = __( 'Never expires', 'wcac' );
-            } else {
-				$expiry_date_string = $coupon_expiry->format( get_option('date_format') );
-			}
+		if ( ! isset( $coupon_expiry ) ) {
+			$expiry_date_string = __( 'Never expires', 'wcac' );
+		} else {
+			$expiry_date_string = $coupon_expiry->format( get_option( 'date_format' ) );
+		}
 
-			$expiry_date_string = apply_filters('wcac_coupond_expire_date_string', $expiry_date_string, $coupon_expiry);
+			$expiry_date_string = apply_filters( 'wcac_coupond_expire_date_string', $expiry_date_string, $coupon_expiry );
 		?>
 		<div class="wcac-coupon-footer wcac-coupon-container">
 			<strong><?php esc_html_e( 'Expiry date: ', 'wcac' ); ?></strong>

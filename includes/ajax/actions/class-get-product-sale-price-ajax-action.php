@@ -42,7 +42,8 @@ class Get_Product_Sale_Price_AJAX_Action implements AJAX_Action_Interface {
 				}
 
 				if ( $product && is_callable( array( $product, 'get_id' ) ) ) {
-					$coupon_id = wc_get_coupon_id_by_code( $_GET['coupon'] );
+					$coupon_code = sanitize_text_field( wp_unslash( $_GET['coupon'] ) );
+					$coupon_id   = wc_get_coupon_id_by_code( $coupon_code );
 
 					if ( $coupon_id ) {
 						$wcac_product = new WCAC_Product( $product );
@@ -52,12 +53,16 @@ class Get_Product_Sale_Price_AJAX_Action implements AJAX_Action_Interface {
 					}
 				}
 			}
-
 		}
 
 		wp_send_json( $response );
 	}
 
+	/**
+	 * Is action is public.
+	 *
+	 * @return true
+	 */
 	public function is_public() {
 		return true;
 	}

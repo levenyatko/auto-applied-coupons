@@ -1,4 +1,9 @@
 <?php
+	/**
+	 * New tab with plugin options on the WC settings page.
+	 *
+	 * @package Auto_Applied_Coupons\Admin\Options
+	 */
 
 	namespace Auto_Applied_Coupons\Admin\Options;
 
@@ -12,11 +17,15 @@ class Settings_Tab implements Settings_Tab_Interface, Actions_Interface, Filters
 
 	/**
 	 * The prefix for subscription settings
+	 *
+	 * @var string $option_prefix
 	 */
 	public static $option_prefix = 'wcac';
 
 	/**
 	 * The WooCommerce settings tab name
+	 *
+	 * @var string $tab_name
 	 */
 	public static $tab_name = 'auto-coupons';
 
@@ -26,10 +35,10 @@ class Settings_Tab implements Settings_Tab_Interface, Actions_Interface, Filters
 	 * @return array
 	 */
 	public function get_actions() {
-		$actions = [];
+		$actions = array();
 
-		$actions[ 'woocommerce_settings_' . self::$tab_name ]       = array('display');
-		$actions[ 'woocommerce_update_options_' . self::$tab_name ] = array('update');
+		$actions[ 'woocommerce_settings_' . self::$tab_name ]       = array( 'display' );
+		$actions[ 'woocommerce_update_options_' . self::$tab_name ] = array( 'update' );
 
 		return $actions;
 	}
@@ -149,7 +158,7 @@ class Settings_Tab implements Settings_Tab_Interface, Actions_Interface, Filters
 				'desc_tip' => true,
 			),
 			array(
-				'title'   => _x( 'Clear coupons cache mode', 'wcac' ),
+				'title'   => __( 'Clear coupons cache mode', 'wcac' ),
 				'type'    => 'select',
 				'class'   => 'wc-enhanced-select',
 				'options' => array(
@@ -182,12 +191,11 @@ class Settings_Tab implements Settings_Tab_Interface, Actions_Interface, Filters
 	 */
 	public function update() {
 		if ( ! isset( $_POST['_wcacnonce'] )
-		     || ! wp_verify_nonce( sanitize_text_field( wp_unslash ( $_POST['_wcacnonce'] ) ) , self::$option_prefix . '_settings' )
-		){
+			|| ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wcacnonce'] ) ), self::$option_prefix . '_settings' )
+		) {
 			return;
 		}
 
 		woocommerce_update_options( self::get_settings() );
 	}
-
 }

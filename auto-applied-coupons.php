@@ -11,25 +11,27 @@
 	 * WC tested up to:   8.5.1
 	 * Requires PHP:      8.0
 	 *
+	 * @package Auto_Applied_Coupons
 	 */
 
 	defined( 'ABSPATH' ) || exit;
 
-	if ( ! defined( 'WCAC_PLUGIN_DIR' ) ) {
-		define( 'WCAC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-	}
+if ( ! defined( 'WCAC_PLUGIN_DIR' ) ) {
+	define( 'WCAC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
 
-	if ( ! defined( 'WCAC_PLUGIN_URL' ) ) {
-		define( 'WCAC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-	}
+if ( ! defined( 'WCAC_PLUGIN_URL' ) ) {
+	define( 'WCAC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
 
-	add_action( 'before_woocommerce_init', function() {
-		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	add_action(
+		'before_woocommerce_init',
+		function () {
+			if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+				\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+			}
 		}
-	} );
-
-	require_once WCAC_PLUGIN_DIR . '/includes/functions.php';
+	);
 
 	require_once __DIR__ . '/includes/class-autoloader.php';
 

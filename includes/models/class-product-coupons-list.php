@@ -1,19 +1,46 @@
 <?php
+	/**
+	 * Procust coupons list data model class.
+	 *
+	 * @package Auto_Applied_Coupons\Models
+	 */
+
 	namespace Auto_Applied_Coupons\Models;
 
 	defined( 'ABSPATH' ) || exit;
 
 class Product_Coupons_List {
 
+	/**
+	 * WooCommerce product ID.
+	 *
+	 * @var int $product_id
+	 */
 	private $product_id;
 
+	/**
+	 * WooCommerce product object.
+	 *
+	 * @var \WC_Product $wc_product
+	 */
 	private $wc_product;
 
+	/**
+	 * Product transient data object.
+	 *
+	 * @var Product_Transient $product_transient
+	 */
 	private $product_transient;
 
-	public function __construct( $product ) {
+	/**
+	 * Class construct.
+	 *
+	 * @param int|\WC_Product   $product Product.
+	 * @param Product_Transient $product_transient Product transient data.
+	 */
+	public function __construct( $product, $product_transient ) {
 
-		if ( is_object($product) ) {
+		if ( is_object( $product ) ) {
 			$this->wc_product = $product;
 		} else {
 			$this->wc_product = wc_get_product( $product );
@@ -21,16 +48,17 @@ class Product_Coupons_List {
 
 		$this->product_id = $this->wc_product->get_id();
 
-		$this->product_transient = new Product_Transient( $this->product_id );
+		$this->product_transient = $product_transient;
 	}
 
 	/**
-	 * @param array $coupons_list
-	 * @param int $ignore_cached
+	 * Get product available coupons list.
+	 *
+	 * @param int $ignore_cached If cached coupons should be ignored.
 	 *
 	 * @return array|false
 	 */
-	public function get ( $ignore_cached = 0 ) {
+	public function get( $ignore_cached = 0 ) {
 
 		if ( ! $this->product_id ) {
 			return false;
@@ -54,7 +82,7 @@ class Product_Coupons_List {
 	}
 
 	/**
-	 * @param int $product_id
+	 * Update product available coupons list.
 	 *
 	 * @return void
 	 */
@@ -68,7 +96,7 @@ class Product_Coupons_List {
 	}
 
 	/**
-	 * @param int|WC_Product $product Product object or id.
+	 * Prepare coupons list.
 	 *
 	 * @return array
 	 */
@@ -147,5 +175,4 @@ class Product_Coupons_List {
 
 		return $updated_list;
 	}
-
 }

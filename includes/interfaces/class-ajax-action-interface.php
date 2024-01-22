@@ -1,5 +1,6 @@
 <?php
 	/**
+	 * Interface for ajax action class.
 	 *
 	 * @package Auto_Applied_Coupons\Interfaces
 	 */
@@ -8,15 +9,19 @@
 
 	defined( 'ABSPATH' ) || exit;
 
-	interface AJAX_Action_Interface {
+interface AJAX_Action_Interface {
 
-		/**
-		 * Action callback function.
-		 *
-		 * @return mixed
-		 */
-		public function callback();
+	/**
+	 * Action callback function.
+	 *
+	 * @return mixed
+	 */
+	public function callback();
 
-		public function is_public();
-
-	}
+	/**
+	 * Is action public.
+	 *
+	 * @return bool
+	 */
+	public function is_public();
+}

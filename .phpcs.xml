@@ -42,6 +42,8 @@
 	<rule ref="Squiz.Commenting">
 		<exclude name="Squiz.Commenting.LongConditionClosingComment" />
 		<exclude name="Squiz.Commenting.PostStatementComment" />
+		<exclude name="Squiz.Commenting.FileComment.Missing" />
+		<exclude name="Squiz.Commenting.ClassComment.Missing" />
 	</rule>
 
 	<rule ref="WordPress.WP.I18n">

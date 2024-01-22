@@ -1,6 +1,6 @@
 <?php
 /**
- * Post vote action callback.
+ * Register plugin custom AJAX actions.
  *
  * @package Auto_Applied_Coupons\AJAX
  */

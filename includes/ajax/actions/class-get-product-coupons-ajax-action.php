@@ -3,6 +3,7 @@
 namespace Auto_Applied_Coupons\AJAX\Actions;
 
 use Auto_Applied_Coupons\Interfaces\AJAX_Action_Interface;
+use Auto_Applied_Coupons\Utils\General_Util;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -46,7 +47,7 @@ class Get_Product_Coupons_AJAX_Action implements AJAX_Action_Interface {
 				if ( $product && is_callable( array( $product, 'get_id' ) ) ) {
 					ob_start();
 
-					wcac_show_available_coupons( $product->get_id() );
+					General_Util::show_available_coupons( $product->get_id() );
 
 					$list_html = ob_get_contents();
 					ob_end_clean();
@@ -55,12 +56,16 @@ class Get_Product_Coupons_AJAX_Action implements AJAX_Action_Interface {
 					$response['success']      = true;
 				}
 			}
-
 		}
 
 		wp_send_json( $response );
 	}
 
+	/**
+	 * Is action is public.
+	 *
+	 * @return true
+	 */
 	public function is_public() {
 		return true;
 	}
