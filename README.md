@@ -7,7 +7,7 @@ The Auto Applied Coupons plugin allows you to display a comprehensive list of av
 - Display a comprehensive list of available coupons for each product on the product page.
 - Show/hide specific coupons from the list based on your preferences.
 - Set additional restriction rules for coupons based on product attributes.
-- Automatically add a coupon to the cart when a product is added.
+- Automatically add a coupon to the cart with a product.
 - Customers can see the discounted product price in the shop after the coupon is applied.
 - Customize the colors of the coupon card to match your store's branding.
 
@@ -19,7 +19,7 @@ You can customize the display settings in the plugin's configuration options.
 
 **Can I hide specific coupons from the list?**
 
-Yes, you can choose whether to show or hide a specific coupon in the 'General' tab when editing a coupon.
+Yes, you can choose whether to show or hide a specific coupon in the 'General' tab when editing a coupon. By default, all coupons are hidden.
 
 **Can I set additional rules for coupons based on product attributes?**
 

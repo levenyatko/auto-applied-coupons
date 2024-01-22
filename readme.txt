@@ -12,14 +12,14 @@ The Auto Applied Coupons plugin is a great solution for WooCommerce sites with a
 
 == Description ==
 
-The Auto Applied Coupons plugin allows you to enhance your WooCommerce store by displaying a comprehensive list of available coupons directly on the product page. It also enables the automatic application of a coupon when a product is added to the cart. Additionally, customers can view the discounted product price in the shop after the coupon is applied.
+The Auto Applied Coupons plugin allows you to enhance your WooCommerce store by displaying a comprehensive list of available coupons directly on the product page. It also enables the automatic application of a coupon when a product is added to the cart. Additionally, customers can view the discounted product price after the coupon is applied.
 
 == Key Features ==
 
 - Display a comprehensive list of available coupons for each product on the product page.
 - Show/hide specific coupons from the list based on your preferences.
-- Automatically add a coupon to the cart when a product is added.
-- Customers can view the discounted product price in the shop after the coupon is applied.
+- Automatically add a coupon to the cart automatically with a product.
+- Customers can view the discounted product price after the coupon is applied.
 - Customize the colors and style of the coupon card to match your store's branding.
 
 == Installation ==
@@ -45,24 +45,26 @@ The Auto Applied Coupons plugin allows you to enhance your WooCommerce store by 
 You can customize the display settings in the plugin's configuration options.
 
 = How can I show specific coupon on the list? =
-Go to the coupon edit page. In the 'General' tab you can choose whether to show or hide this coupon.
+Go to the coupon edit page. In the 'General' tab you can choose whether to show or hide this coupon. By default, all coupons are hidden.
 
 = Can I change the color scheme for the coupons displayed? =
-Of course. In the admin panel, go to the WooCommerce settings page and select the "Coupons" tab. Here you can set the background and text color for active and inactive coupon cards.
+In the admin panel, go to the WooCommerce settings page and select the "Coupons" tab. Here you can set the background and text color for active and inactive coupon cards.
 
 = How can I rewrite the template for the available coupons list? =
 Copy files from the '/wp-content/plugins/auto-applied-coupons/templates' folder to a new folder in your theme named 'coupons'.
 
 == Screenshots ==
-1. Edit coupon page. General tab
-2. Edit coupon page. Usage restriction tab
-4. Product page with new coupon blocks
+1. Edit coupon page. General tab.
+2. Edit coupon page. Usage restriction tab.
+3. Plugin settings tab.
+4. Product page with new coupon blocks.
 
 == Upgrade Notice ==
 
 
 == Changelog ==
 
-= 1.4.0 =
-* Fixed compatibility with Woocommerce to 8.2.1
-* Updated compatibility with WordPress to 6.4
+= 2.0.0 =
+* Refactored all plugin code.
+* Tested compatibility with WordPress 6.4.2
+* Tested compatibility with WooCommerce 8.5.1
