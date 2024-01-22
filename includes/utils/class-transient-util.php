@@ -35,8 +35,14 @@ class Transient_Util {
 		global $wpdb;
 
 		$prefix = $wpdb->esc_like( '_transient_wcac_product_' );
-		$sql    = "SELECT `option_name` FROM %i WHERE `option_name` LIKE '%s'";
-		$keys   = $wpdb->get_results( $wpdb->prepare( $sql, $wpdb->options, $prefix . '%' ), ARRAY_A );
+		$keys   = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT `option_name` FROM %i WHERE `option_name` LIKE %s',
+				$wpdb->options,
+				$prefix . '%'
+			),
+			ARRAY_A
+		);
 
 		if ( is_wp_error( $keys ) ) {
 			return array();

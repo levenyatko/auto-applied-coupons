@@ -34,6 +34,14 @@ class General_Util {
 		return null;
 	}
 
+	/**
+	 * Show product available products.
+	 *
+	 * @param int  $product_id Product ID to which available coupons should e displayed.
+	 * @param bool $ignore_cached If cached coupons should be ignored.
+	 *
+	 * @return void
+	 */
 	public static function show_available_coupons( $product_id, $ignore_cached = false ) {
 
 		$coupons = apply_filters( 'wcac_available_coupons_for_product', array(), $product_id, $ignore_cached );
@@ -115,5 +123,4 @@ class General_Util {
 			++$i;
 		}
 	}
-
 }

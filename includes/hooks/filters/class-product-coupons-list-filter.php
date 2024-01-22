@@ -30,7 +30,7 @@ class Product_Coupons_List_Filter implements Filters_Interface {
 	 * Get available coupons for product.
 	 *
 	 * @param array $coupons_list  Old coupons list to filter.
-	 * @param int   $product WooCommerce product ID.
+	 * @param int   $product_id WooCommerce product ID.
 	 * @param bool  $ignore_cached  Should the cached coupons ignored.
 	 *
 	 * @return array|false
